@@ -52,12 +52,22 @@ import utm
 import shapefile ## from pyshp
 from point_in_poly import point_in_polygon
 
+git=True
 ## Set Directories
-datadir = 'C:/Users/Alex/Desktop/'
-trackdir = 'samoa/DRIFTERS/AllTracks/'
-
+if git==True:
+    maindir = 'C:/Users/Alex/Documents/GitHub/Faga-alu-Bay-water-circulation/'
+    datadir=maindir+'Data/'
+    trackdir = maindir+'Data/AllTracks/'
+    GISdir = maindir+'Data/DriftersGIS/'
+    figdir = maindir+'Figures/fromAlex/'
+    
+elif git!=True:
+    datadir = 'C:/Users/Alex/Desktop/'
+    trackdir = 'samoa/DRIFTERS/AllTracks/'
+    
+    
 ## Open Spreadsheet of deployment data
-XL = pd.ExcelFile(datadir+'samoa/DRIFTERS/Drifter deployment checklist.xlsx')
+XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
 DepInfo =  XL.parse('Table',header=1,parse_cols='B:O',index_col=0)
 
 ## Map Extents: Local, Island, Region
@@ -70,7 +80,7 @@ gMap = Basemap(projection='merc', resolution='f',
                llcrnrlon=ll[1], llcrnrlat=ll[0],
                urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
 #### Show background image from DriftersBackground.mxd
-background = np.flipud(plt.imread(datadir+'samoa/DRIFTERS/DrifterBackground.png'))
+background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground.png'))
 gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
 
 #### Show Lat/Lon Grid               
@@ -78,12 +88,12 @@ gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
 #gMap.drawmeridians(np.arange(ll[1],ur[1],.001),labels=[0,0,0,1])
 
 #### Display Shapefiles:
-gMap.readshapefile(datadir+'samoa/GIS/fagaalugeo','fagaalugeo') ## Display coastline of watershed
-gMap.readshapefile(datadir+'samoa/GIS/DriftersGIS/grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
+gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
+gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
 #gMap.readshapefile(datadir+'samoa/GIS/DriftersGIS/Launchpads','Launchpads') ## Display launch zones
 
 #### Open shapefiles for analysis
-shapef = shapefile.Reader(datadir+'samoa/GIS/DriftersGIS/grid100m_geo.shp')
+shapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 #### Label Gridcells
 labelcount=len(shapef.shapes())
 for shape in shapef.shapes():
@@ -93,7 +103,7 @@ for shape in shapef.shapes():
     labelcount-=1
 
 #### Read GPX file data of drifter tracks:
-gpx = gpxpy.parse(open(datadir+trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
+gpx = gpxpy.parse(open(trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
 #gpx = gpxpy.parse(open(datadir+trackdir+'Dep1.gpx','r')) ## Single track file
 tracklist=gpx.tracks[0:] 
 ##
@@ -174,7 +184,7 @@ for track in tracklist:
 
 #### Plot arrows by Gridcell
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by Gridcell)    
-sc=gMap.quiver(AllPoints['lon'],AllPoints['lat'],sin(radians(AllPoints['bearing'])),cos(radians(AllPoints['bearing'])),AllPoints['Gridcell'].values,latlon=True,scale=40,cmap=plt.cm.Paired,edgecolors='grey',linewidths=0.1) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
+sc=gMap.quiver(AllPoints['lon'].values,AllPoints['lat'].values,sin(radians(AllPoints['bearing'])),cos(radians(AllPoints['bearing'])),AllPoints['Gridcell'].values,latlon=True,scale=40,cmap=plt.cm.Paired,edgecolors='grey',linewidths=0.1) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
 
 
   

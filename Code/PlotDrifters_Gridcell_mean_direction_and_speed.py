@@ -53,6 +53,7 @@ import shapefile ## from pyshp
 from point_in_poly import point_in_polygon
 import math
 import scipy
+import datetime as dt
 
 pd.set_option('display.large_repr', 'info')
 ## Set Directories
@@ -73,8 +74,8 @@ gMap = Basemap(projection='merc', resolution='f',
                llcrnrlon=ll[1], llcrnrlat=ll[0],
                urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
 #### Show background image from DriftersBackground.mxd
-background = np.flipud(plt.imread(datadir+'samoa/DRIFTERS/DrifterBackground.png'))
-gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
+#background = np.flipud(plt.imread(datadir+'samoa/DRIFTERS/DrifterBackground.png'))
+#gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
 
 #### Show Lat/Lon Grid               
 #gMap.drawparallels(np.arange(ll[0],ur[0],.001),labels=[1,1,0,0])

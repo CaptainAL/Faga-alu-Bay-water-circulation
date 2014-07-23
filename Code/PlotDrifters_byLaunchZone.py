@@ -183,7 +183,7 @@ for track in tracklist:
 
 #### Plot arrows by LaunchZnne
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by LaunchZone)    
-sc=gMap.quiver(AllPoints['lon'],AllPoints['lat'],sin(radians(AllPoints['bearing'])),cos(radians(AllPoints['bearing'])),AllPoints['LaunchZone'].values,latlon=True,scale=30,edgecolors='grey',linewidths=0.1,cmap='rainbow') # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
+sc=gMap.quiver(AllPoints['lon'].values,AllPoints['lat'].values,sin(radians(AllPoints['bearing'])),cos(radians(AllPoints['bearing'])),AllPoints['LaunchZone'].values,latlon=True,scale=30,edgecolors='grey',linewidths=0.1,cmap='rainbow') # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
 
 
   
