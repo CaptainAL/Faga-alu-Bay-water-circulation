@@ -56,12 +56,21 @@ import scipy
 import datetime as dt
 
 pd.set_option('display.large_repr', 'info')
+
 ## Set Directories
-datadir = 'C:/Users/Alex/Desktop/'
-trackdir = 'samoa/DRIFTERS/AllTracks/'
+git=True
+if git==True:
+    maindir = 'C:/Users/Alex/Documents/GitHub/Faga-alu-Bay-water-circulation/'
+    datadir=maindir+'Data/'
+    trackdir = maindir+'Data/AllTracks/'
+    GISdir = maindir+'Data/DriftersGIS/'
+    figdir = maindir+'Figures/fromAlex/'
+elif git!=True:
+    datadir = 'C:/Users/Alex/Desktop/'
+    trackdir = 'samoa/DRIFTERS/AllTracks/'
 
 ## Open Spreadsheet of deployment data
-XL = pd.ExcelFile(datadir+'samoa/DRIFTERS/Drifter deployment checklist.xlsx')
+XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
 DepInfo =  XL.parse('Table',header=1,parse_cols='B:O',index_col=0)
 
 ## Map Extents: Local, Island, Region
@@ -82,12 +91,12 @@ gMap = Basemap(projection='merc', resolution='f',
 #gMap.drawmeridians(np.arange(ll[1],ur[1],.001),labels=[0,0,0,1])
 
 #### Display Shapefiles:
-gMap.readshapefile(datadir+'samoa/GIS/fagaalugeo','fagaalugeo') ## Display coastline of watershed
-gMap.readshapefile(datadir+'samoa/GIS/DriftersGIS/grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
+gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
+gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
 #gMap.readshapefile(datadir+'samoa/GIS/DriftersGIS/Launchpads','Launchpads') ## Display launch zones
 
 #### Open shapefiles for analysis
-shapef = shapefile.Reader(datadir+'samoa/GIS/DriftersGIS/grid100m_geo.shp')
+shapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 #### Label Gridcells
 labelcount=len(shapef.shapes())
 for shape in shapef.shapes():
@@ -110,7 +119,7 @@ def point_is_in_polygon(point):
     
     
 #### Read GPX file data of drifter tracks:
-gpx = gpxpy.parse(open(datadir+trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
+gpx = gpxpy.parse(open(trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
 #gpx = gpxpy.parse(open(datadir+trackdir+'Dep1.gpx','r')) ## Single track file
 tracklist=gpx.tracks[0:] 
 ##
@@ -295,7 +304,7 @@ cbar.set_label('Speed (m/s)')
 
 plt.show()
 
-
+plt.savefig(figdir+'drifters gridded mean velocity.png',transparent=True)
 ## Extras:
 ## Format lat/lon decimal degrees to reasonable accuracy (~1m?)
 #Points['lat']=Points['lat'].map(lambda x: '%.9f' % x)
