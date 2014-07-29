@@ -83,26 +83,29 @@ shapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byLaunchZone.py
 
 ## Select deployments, cut to deployment time
-by_dep='all' ## Set to None if you want to show all the data
+endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+by_dep='wind'## Set to None if you want to show all the data
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
-    DepInfo =  XL.parse('Table',header=1,parse_cols='B:O',index_col=0)
+    DepInfo =  XL.parse('Table',header=1,parse_cols='B:O',index_col=1)
     deployments=pd.DataFrame()
     for deployment in DepInfo.iterrows():
-        start=my_parser(deployment[1]['Date'],deployment[1]['Start Time'])
-        end=my_parser(deployment[1]['Date'],deployment[1]['End Time'])
+        start=my_parser(deployment[1]['Date'],deployment[1]['Start Time']) ##start time from DepInfo spreadsheet
+        end=my_parser(deployment[1]['Date'],deployment[1]['End Time']) ##end time from DepInfo spreadsheet
+        end = start+dt.timedelta(minutes=60) ## end time = start time + 1hour
         dep_num = deployment[0]
         #print dep_num,pd.date_range(start,end,freq='1Min')
         deployments=deployments.append(pd.DataFrame(data={'#':dep_num,'start':start,'end':end},index=[dep_num]))  
-    endmembers={"wind":[4,5,6,7,8,10,11,12,13,14,15,16],"calm":[1,2,3,9,17,18,19,20,21,22,23,24],"wave":range(25,31),"all":range(1,31)}
     deplist = endmembers[by_dep]
     
     SelPoints = pd.DataFrame()
     for dep in deployments.ix[deplist].iterrows(): ## put in Deployment #(s) here
-        print dep[0], dep[1]['start'],dep[1]['end']
-        SelPoints= AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
-    AllPoints=SelPoints
+        #print dep[0], dep[1]['start'],dep[1]['end']
+        SelPoints= SelPoints.append(AllPoints[dep[1]['start']:dep[1]['end']]) ## [1] gets data from row tuple
+        
+    AllPoints=SelPoints.sort()
+
 
 #### Analyze by Gridcell
 gridcount=len(shapef.shapes())
@@ -143,13 +146,15 @@ for shape in shapef.shapes():
                 Dv = vdir
         GridMean_speed = uv
         GridMean_bearing=Dv
-        print 'Mean speed of points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing
-        GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,GridMean_speed,GridMean_bearing]]),index=[gridcount],columns=['lon','lat','speed m/s','bearing'])
+        GridNumObs = len(gridpoints)
+        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing
+        GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,len(gridpoints),GridMean_speed,GridMean_bearing]]),index=[gridcount],columns=['lon','lat','NumObs','speed m/s','bearing'])
         AllGridValues=AllGridValues.append(GridValues)
         #x,y= gMap(grid_lon,grid_lat)
         #plt.text(x,y,'%.0f'%GridMean_bearing,color='w')
     gridcount-=1 # count down from total length of grid by 1  
-
+print 'Max speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].max())
+print 'Min speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].min())
 #    GridMean_speed = gridpoints['speed m/s'].max()
 #    GridMean_x = gridpoints['x'].sum()
 #    GridMean_y= gridpoints['y'].sum()
@@ -159,12 +164,14 @@ for shape in shapef.shapes():
     
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 from DrifterDataAnalysisTools import plot_mean_grid_velocity
 sc=plot_mean_grid_velocity(Map,AllGridValues)
+#plot_arrows_by_speed(Map,AllPoints)
 
+#plt.suptitle('End member condition: '+by_dep)
 
-plt.savefig(figdir+'drifters gridded mean velocity.png',transparent=True)
+plt.savefig(figdir+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
 
 
 

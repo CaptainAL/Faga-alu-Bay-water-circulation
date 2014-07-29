@@ -18,7 +18,7 @@ import utm
 import shapefile ## from pyshp
 
 
-def my_parser(x,y):
+def my_parser(x,y):#x is the date, y is the time
             y = str(int(y))
             hour=y[:-2]
             minute=y[-2:]
@@ -192,10 +192,9 @@ def speed_and_bearing_to_file(dirs,tracklist,gridshape=None,launchzoneshape=None
 #gridshapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 #AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=gridshapef,launchzoneshape=launchshapef)
     
-def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,showLaunchZones=False):
+def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,labelBinGrid=True,showLaunchZones=False):
     figdir=dirs['fig']
     GISdir = dirs['GIS']
-    
     ## Map Extents: Local, Island, Region
     if MapExtent=='Local':
         ll, ur = [-14.294238,-170.683732],[-14.286362, -170.673260] 
@@ -203,9 +202,10 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
         ll, ur= [-14.4,-170.8], [-14.23, -170.54]
     elif MapExtent=='Region':
         ll, ur = [-20,-177],[-14,-170]
-        
     ## Make Plot
     fig, ax = plt.subplots(1)
+    fig.patch.set_visible(False)
+    ax.axis('off')
     gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
     #### Show background image from DriftersBackground.mxd
     if showBackgroundImage==True:
@@ -220,6 +220,14 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
         gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
     if showBinGrid==True:
         gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
+    if labelBinGrid==True:
+        gridshape=shapefile.Reader(GISdir+'grid100m_geo.shp')
+        labelcount=len(gridshape.shapes())
+        for shape in gridshape.shapes():
+            x,y= gMap(shape.points[0][0],shape.points[0][1])
+            plt.text(x,y,labelcount,color='w')
+            #print str(labelcount)+' '+str(shape.points[0][0])+' '+str(shape.points[0][1])
+            labelcount-=1
     if showLaunchZones==True:
         gMap.readshapefile(GISdir+'Launchpads','Launchpads') ## Display launch zones
         
@@ -267,6 +275,7 @@ def label_grid_cells(Map,gridshape):
         plt.text(x,y,labelcount,color='w')
         #print str(labelcount)+' '+str(shape.points[0][0])+' '+str(shape.points[0][1])
         labelcount-=1
+    plt.show()
     return
     
 def plot_arrows_by_gridcell(Map,df):
@@ -282,12 +291,12 @@ def plot_arrows_by_gridcell(Map,df):
     return sc
     
 def plot_mean_grid_velocity(Map,df):
-    sc=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,scale=20,pivot='middle',headlength=6,headaxislength=6,edgecolors='k',linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.4)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
+    Q=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,pivot='middle',edgecolors='k',scale=20,headlength=6,headaxislength=6,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
     ## Colorbar, scaled to image size
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(Map.ax)
     cax = divider.append_axes("right", size="5%", pad=0.05)
-    cbar=plt.colorbar(sc,cax=cax)
+    cbar=plt.colorbar(Q,cax=cax)
     cbar.set_label('Speed m/s')
     plt.show()  
-    return sc
+    return Q
