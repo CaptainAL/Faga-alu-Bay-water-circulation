@@ -198,18 +198,19 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     ## Map Extents: Local, Island, Region
     if MapExtent=='Local':
         ll, ur = [-14.294238,-170.683732],[-14.286362, -170.673260] 
+        ll, ur = [-14.295337283,-170.684163993],[-14.285531852, -170.673919854]
     elif MapExtent=='Island':
         ll, ur= [-14.4,-170.8], [-14.23, -170.54]
     elif MapExtent=='Region':
         ll, ur = [-20,-177],[-14,-170]
     ## Make Plot
     fig, ax = plt.subplots(1)
-    fig.patch.set_visible(False)
-    ax.axis('off')
+    #fig.patch.set_visible(False)
+    #ax.axis('off')
     gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
     #### Show background image from DriftersBackground.mxd
     if showBackgroundImage==True:
-        background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground.png'))
+        background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground_matchCurts.png'))
         gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
     #### Show Lat/Lon Grid        
     if showLatLonGrid==True:       
@@ -219,7 +220,7 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     if showWatershed==True:
         gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
     if showBinGrid==True:
-        gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo') ## Display 100m grid cells for statistical analysis
+        gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo',color='w') ## Display 100m grid cells for statistical analysis
     if labelBinGrid==True:
         gridshape=shapefile.Reader(GISdir+'grid100m_geo.shp')
         labelcount=len(gridshape.shapes())
@@ -292,6 +293,17 @@ def plot_arrows_by_gridcell(Map,df):
     
 def plot_mean_grid_velocity(Map,df):
     Q=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,pivot='middle',edgecolors='k',scale=20,headlength=6,headaxislength=6,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
+    ## Colorbar, scaled to image size
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    divider = make_axes_locatable(Map.ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar=plt.colorbar(Q,cax=cax)
+    cbar.set_label('Speed m/s')
+    plt.show()  
+    return Q
+    
+def plot_grid_arrows(Map,df):
+    Q=Map.quiver(df['lon'].values,df['lat'].values,df['easting'].values,df['northing'].values,df['speed m/s'].values,angles=df['bearing'],latlon=True,pivot='middle',edgecolors='k',scale=2,headlength=1,headaxislength=1,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
     ## Colorbar, scaled to image size
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(Map.ax)
