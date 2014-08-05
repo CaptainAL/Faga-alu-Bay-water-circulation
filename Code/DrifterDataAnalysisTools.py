@@ -4,9 +4,10 @@ Created on Thu Jul 24 06:24:54 2014
 
 @author: Alex
 """
+        
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap 
+from mpl_toolkits.basemap import Basemap
 
 import pandas as pd
 import numpy as np
@@ -312,3 +313,8 @@ def plot_grid_arrows(Map,df):
     cbar.set_label('Speed m/s')
     plt.show()  
     return Q
+
+def plot_grid_ellipses(Map,df):
+    Q=Map.ellipse(df['lon'].values,df['lat'].values,abs(df['easting']),abs(df['northing'].values),100,facecolor='green',alpha=0.5)
+    return Q
+    

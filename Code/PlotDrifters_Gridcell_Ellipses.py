@@ -74,7 +74,8 @@ if by_dep!=None:
 #### Analyze by Gridcell
 gridcount=len(shapef.shapes())
 AllGridValues=pd.DataFrame()
-Ells = []
+
+fig,ax = plt.subplots()
 for shape in shapef.shapes():
     ## get center of shape by finding the mean lat and lon of all points in shapefile polygon
     grid_lons,grid_lats = [],[] # create empty lists for each polygon (grid cell)
@@ -109,23 +110,37 @@ for shape in shapef.shapes():
                 Dv = vdir - 180
             else:
                 Dv = vdir
-        
-        XY=[grid_lon,grid_lat,abs(ve),abs(vn),vdir]
-        #XY=np.array([grid_lon,grid_lat])
-        #Ells.append(Ellipse(xy=XY,width=ve*100,height=vn*100,angle=vdir,edgecolor='k',lw=10))     
-        Ells.append(XY)          
-                
         GridMean_speed = uv
         GridMean_bearing=Dv
         GridNumObs = len(gridpoints)
         print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing
         GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,GridNumObs,GridMean_speed,GridMean_bearing,ve,vn]]),index=[gridcount],columns=['lon','lat','NumObs','speed m/s','bearing','easting','northing'])
         AllGridValues=AllGridValues.append(GridValues)
-        #x,y= gMap(grid_lon,grid_lat)
-        #plt.text(x,y,'%.0f'%GridMean_bearing,color='w')
+        
+        data= GridValues[['easting','northing']].values
+        mu = data.mean(axis=0)
+        data = data - mu
+        # data = (data - mu)/data.std(axis=0)  # Uncomment this reproduces mlab.PCA results
+        eigenvectors, eigenvalues, V = np.linalg.svd(data.T, full_matrices=False)
+        projected_data = np.dot(data, eigenvectors)
+        sigma = projected_data.std(axis=0).mean()
+        print(eigenvectors)
+        def annotate(ax, name, start, end):
+            arrow = ax.annotate(name,
+                                xy=end, xycoords='data',
+                                xytext=start, textcoords='data',
+                                arrowprops=dict(facecolor='red', width=2.0))
+            return arrow
+
+        ax.scatter(GridValues['easting'],GridValues['northing'])
+        ax.set_aspect('equal')
+        for axis in eigenvectors:
+            annotate(ax, '', mu, mu + sigma * axis) 
+
+
     gridcount-=1 # count down from total length of grid by 1  
-print 'Max speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].max())
-print 'Min speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].min())
+print 'Max speed for endmember condition: '+by_dep+' '+'%.2f'% AllGridValues['speed m/s'].max()
+print 'Min speed for endmember condition: '+by_dep+' '+'%.2f'% AllGridValues['speed m/s'].min()
 #    GridMean_speed = gridpoints['speed m/s'].max()
 #    GridMean_x = gridpoints['x'].sum()
 #    GridMean_y= gridpoints['y'].sum()
@@ -135,11 +150,8 @@ print 'Min speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed 
     
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
-from DrifterDataAnalysisTools import plot_grid_arrows
-plot_grid_arrows(Map,AllGridValues)
-
-
+#Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+from DrifterDataAnalysisTools import plot_grid_ellipses
 
 plt.show()
 
