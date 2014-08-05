@@ -79,7 +79,9 @@ tracklist=gpx.tracks[0:]
 
 ###### Open shapefiles for analysis
 shapef = shapefile.Reader(GISdir+'Launchpads.shp')
-#AllPoints = speed_and_bearing(tracklist,launchzoneshape=shapef)
+grid = shapefile.Reader(GISdir+'grid100m_geo.shp')
+AllPoints = speed_and_bearing(tracklist,launchzoneshape=shapef)
+AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=grid,launchzoneshape=shapef)
 AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') 
 
 #### Plot arrows by LaunchZone

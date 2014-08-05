@@ -19,8 +19,6 @@ from DrifterDataAnalysisTools import point_in_polygon, point_in_gridcell, point_
 from DrifterDataAnalysisTools import plot_arrows_by_speed, plot_arrows_by_gridcell, plot_arrows_by_launchzone
 from DrifterDataAnalysisTools import label_grid_cells, label_launch_zones
 
-
-
 pd.set_option('display.large_repr', 'info')
 
 ## Set Directories
@@ -42,7 +40,7 @@ gpx = gpxpy.parse(open(trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
 tracklist=gpx.tracks[0:] 
 ##
 #### Open shapefiles for analysis
-shapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
+grid = shapefile.Reader(GISdir+'grid100m_geo.shp')
 #AllPoints = speed_and_bearing(tracklist,gridshape=shapef)
 AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byLaunchZone.py
 
@@ -72,11 +70,11 @@ if by_dep!=None:
 
 
 #### Analyze by Gridcell
-gridcount=len(shapef.shapes())
+gridcount=len(grid.shapes()) ##establish grid count
 AllGridValues=pd.DataFrame()
 
 fig,ax = plt.subplots()
-for shape in shapef.shapes():
+for shape in grid.shapes():
     ## get center of shape by finding the mean lat and lon of all points in shapefile polygon
     grid_lons,grid_lats = [],[] # create empty lists for each polygon (grid cell)
     for point in shape.points:
@@ -86,38 +84,7 @@ for shape in shapef.shapes():
     ## get points from the Gridcell
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
     if len(gridpoints) >= 2:
-        #http://python.hydrology-amsterdam.nl/modules/meteolib.py
-        ## get mean speed and mean direction by finding mean movement in the x and y directions and finding the bearing
-        u=gridpoints['speed m/s'].values    
-        D=gridpoints['bearing'].values
-    
-        ve = 0.0 # define east component of speed
-        vn = 0.0 # define north component of speed
-        D = D * math.pi / 180.0 # convert direction degrees to radians
-        for i in range(0, len(u)):
-            ve = ve + u[i] * math.sin(D[i]) # calculate sum east speed components
-            vn = vn + u[i] * math.cos(D[i]) # calculate sum north speed components
-        ve = - ve / len(u) # determine average east speed component
-        vn = - vn / len(u) # determine average north speed component
-        uv = math.sqrt(ve * ve + vn * vn) # calculate wind speed vector magnitude
-        #Calculate wind speed vector direction
-        vdir = scipy.arctan2(ve, vn)
-        vdir = vdir * 180.0 / math.pi # Convert radians to degrees
-        if vdir < 180:
-            Dv = vdir + 180.0
-        else:
-            if vdir > 180.0:
-                Dv = vdir - 180
-            else:
-                Dv = vdir
-        GridMean_speed = uv
-        GridMean_bearing=Dv
-        GridNumObs = len(gridpoints)
-        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing
-        GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,GridNumObs,GridMean_speed,GridMean_bearing,ve,vn]]),index=[gridcount],columns=['lon','lat','NumObs','speed m/s','bearing','easting','northing'])
-        AllGridValues=AllGridValues.append(GridValues)
-        
-        data= GridValues[['easting','northing']].values
+        data= gridpoints[['easting','northing']].values
         mu = data.mean(axis=0)
         data = data - mu
         # data = (data - mu)/data.std(axis=0)  # Uncomment this reproduces mlab.PCA results
@@ -132,22 +99,14 @@ for shape in shapef.shapes():
                                 arrowprops=dict(facecolor='red', width=2.0))
             return arrow
 
-        ax.scatter(GridValues['easting'],GridValues['northing'])
+        ax.scatter(gridpoints['easting'],gridpoints['northing'])
         ax.set_aspect('equal')
         for axis in eigenvectors:
             annotate(ax, '', mu, mu + sigma * axis) 
 
 
     gridcount-=1 # count down from total length of grid by 1  
-print 'Max speed for endmember condition: '+by_dep+' '+'%.2f'% AllGridValues['speed m/s'].max()
-print 'Min speed for endmember condition: '+by_dep+' '+'%.2f'% AllGridValues['speed m/s'].min()
-#    GridMean_speed = gridpoints['speed m/s'].max()
-#    GridMean_x = gridpoints['x'].sum()
-#    GridMean_y= gridpoints['y'].sum()
-#    GridMean_initial_bearing=arctan2(GridMean_x,GridMean_y)
-#    GridMean_initial_bearing=degrees(GridMean_initial_bearing)
-#    GridMean_bearing= (GridMean_initial_bearing+ 360) % 360
-    
+
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
 #Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  

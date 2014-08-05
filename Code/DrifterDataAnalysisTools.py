@@ -139,7 +139,9 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
                         pass
                     
                 ## Get point data (lat,lon,UTM x, UTM y,LaunchZone)
-                points[point.time]=(point.latitude,point.longitude,utm.from_latlon(point.latitude,point.longitude)[0],utm.from_latlon(point.latitude,point.longitude)[1],Gridcell,LaunchZone) ## utm.py returns the zone as well, just need northing and easting
+                lat,lon = point.latitude,point.longitude
+                lat_utm,lon_utm = utm.from_latlon(point.latitude,point.longitude)[0],utm.from_latlon(point.latitude,point.longitude)[1]
+                points[point.time]=(lat,lon,lat_utm,lon_utm,Gridcell,LaunchZone) ## utm.py returns the zone as well, just need northing and easting
         
         ## Calculates speed and direction per point in each track      
         #### Calcs
@@ -150,6 +152,10 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
         Points['Y before']=Points['Y'].shift(1)
         Points['X after']=Points['X'].shift(-1)
         Points['Y after']=Points['Y'].shift(-1)
+        ## Calculate Easting and Northing (m)
+        Points['easting']= Points['X']-Points['X before']     
+        Points['northing']=Points['Y after']-Points['Y before']
+        
         ## Calculate distance by pythagorean theorem
         Points['distance m'] = ((Points['X']-Points['X before'])**2.0 + (Points['Y after']-Points['Y before'])**2.0)**0.5
         Points['speed m/s']= Points['distance m']/60 ## Speed = Distance/Time (Time is 1Min=60sec **above in .resample(1Min))
