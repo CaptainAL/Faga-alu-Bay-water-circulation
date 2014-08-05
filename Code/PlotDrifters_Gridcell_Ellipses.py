@@ -85,25 +85,33 @@ for shape in grid.shapes():
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
     if len(gridpoints) >= 2:
         data= gridpoints[['easting','northing']].values
-        mu = data.mean(axis=0)
-        data = data - mu
-        # data = (data - mu)/data.std(axis=0)  # Uncomment this reproduces mlab.PCA results
-        eigenvectors, eigenvalues, V = np.linalg.svd(data.T, full_matrices=False)
-        projected_data = np.dot(data, eigenvectors)
-        sigma = projected_data.std(axis=0).mean()
-        print(eigenvectors)
-        def annotate(ax, name, start, end):
-            arrow = ax.annotate(name,
-                                xy=end, xycoords='data',
-                                xytext=start, textcoords='data',
-                                arrowprops=dict(facecolor='red', width=2.0))
-            return arrow
+        mean_x = gridpoints['easting'].mean()
+        mean_y = gridpoints['northing'].mean()
+        gridpoints['corrected x'] = gridpoints['easting']-mean_x #X data with the means subtracted
+        gridpoints['corrected y'] = gridpoints['northing']-mean_y #Y data with the means subtracted
+        corr_data = gridpoints[['corrected x','corrected y']].values
+        covData = np.cov(corr_data.T) #calculate covariance matrix
+        print gridpoints[['corrected x','corrected y']].values.shape
+        
+        eigenValues, eigenVectors = np.linalg.eig(covData) 
+        
+        
+        idx = eigenValues.argsort()[::-1]   
+        eigenValues = eigenValues[idx]
+        eigenVectors = eigenVectors[:,idx]
+        
+        
+        eigenValues, eigenVectors, score= princomp(data)
+        
+        
+        randColor= np.random.rand(3,1)
 
-        ax.scatter(gridpoints['easting'],gridpoints['northing'])
-        ax.set_aspect('equal')
-        for axis in eigenvectors:
-            annotate(ax, '', mu, mu + sigma * axis) 
-
+        
+        plt.plot([0, -eigenVectors[0,0]*2]+mean_x, [0, -eigenVectors[0,1]*2]+mean_y,c=randColor)
+        plt.plot([0, eigenVectors[1,0]*2]+mean_x, [0, eigenVectors[1,1]*2]+mean_y,c=randColor)
+        plt.scatter(gridpoints['easting'],gridpoints['northing'],c=randColor)
+        plt.axis('equal')        
+        
 
     gridcount-=1 # count down from total length of grid by 1  
 
