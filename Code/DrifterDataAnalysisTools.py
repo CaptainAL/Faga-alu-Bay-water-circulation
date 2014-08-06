@@ -153,11 +153,11 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
         Points['X after']=Points['X'].shift(-1)
         Points['Y after']=Points['Y'].shift(-1)
         ## Calculate Easting and Northing (m)
-        Points['easting']= Points['X']-Points['X before']     
-        Points['northing']=Points['Y after']-Points['Y before']
+        Points['easting']= Points['X before']-Points['X']     
+        Points['northing']=Points['Y before']-Points['Y']
         
         ## Calculate distance by pythagorean theorem
-        Points['distance m'] = ((Points['X']-Points['X before'])**2.0 + (Points['Y after']-Points['Y before'])**2.0)**0.5
+        Points['distance m'] = ((Points['X']-Points['X before'])**2.0 + (Points['Y']-Points['Y before'])**2.0)**0.5
         Points['speed m/s']= Points['distance m']/60 ## Speed = Distance/Time (Time is 1Min=60sec **above in .resample(1Min))
         
         Points['lon before']=Points['lon'].shift(1)
@@ -242,7 +242,7 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     return gMap
     
 def plot_arrows_by_speed(Map,df):
-    sc=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.9),scale=40,pivot='middle',headwidth=5,headlength=5,headaxislength=5,edgecolors='grey',linewidths=0.2) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
+    sc=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.5),scale=40,pivot='middle',headwidth=5,headlength=5,headaxislength=5,edgecolors='grey',linewidths=0.2) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
     ## Colorbar, scaled to image size
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(Map.ax)
@@ -299,7 +299,7 @@ def plot_arrows_by_gridcell(Map,df):
     return sc
     
 def plot_mean_grid_velocity(Map,df):
-    Q=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,pivot='middle',edgecolors='k',scale=20,headlength=6,headaxislength=6,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
+    Q=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,pivot='middle',edgecolors='k',scale=20,headlength=6,headaxislength=6,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.3)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
     ## Colorbar, scaled to image size
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(Map.ax)
@@ -310,7 +310,7 @@ def plot_mean_grid_velocity(Map,df):
     return Q
     
 def plot_grid_arrows(Map,df):
-    Q=Map.quiver(df['lon'].values,df['lat'].values,df['easting'].values,df['northing'].values,df['speed m/s'].values,angles=df['bearing'],latlon=True,pivot='middle',edgecolors='k',scale=2,headlength=1,headaxislength=1,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
+    Q=Map.quiver(df['lon'].values,df['lat'].values,df['easting'].values,df['northing'].values,df['speed m/s'].values,angles=df['bearing'],latlon=True,pivot='middle',edgecolors='k',scale=2,headlength=1,headaxislength=1,linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.7)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html    
     ## Colorbar, scaled to image size
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(Map.ax)
@@ -320,8 +320,15 @@ def plot_grid_arrows(Map,df):
     plt.show()  
     return Q
 
-def plot_grid_ellipses(Map,df):
-    Q=Map.ellipse(df['lon'].values,df['lat'].values,abs(df['easting']),abs(df['northing'].values),100,facecolor='green',alpha=0.5)
+def plot_grid_ellipses_arrows(Map,df):
+    Q=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,edgecolors='k',linewidths=0.2,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.3)) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html 
+    ## Colorbar, scaled to image size
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    divider = make_axes_locatable(Map.ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar=plt.colorbar(Q,cax=cax)
+    cbar.set_label('Speed m/s')
+    plt.show()  
     return Q
     
 def princomp(A):
