@@ -11,7 +11,7 @@ import numpy as np
 import scipy
 import gpxpy
 import shapefile ## from pyshp
-import datetime as dt4
+import datetime as dt
 from matplotlib.patches import Ellipse
 
 ## My functions:
@@ -69,6 +69,8 @@ if by_dep!=None:
         
     AllPoints=SelPoints.sort()
 
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+
 
 #### Analyze by Gridcell
 gridcount=len(grid.shapes()) ##establish grid count
@@ -79,7 +81,9 @@ for shape in grid.shapes():
     for point in shape.points:
         grid_lons.append(point[0])
         grid_lats.append(point[1])
-    grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) 
+    grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees
+    grid_lon, grid_lat = Map(grid_lon,grid_lat,inverse=False)
+    print grid_lon, grid_lat
     ## get points from the Gridcell
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
     if len(gridpoints) >= 2:
@@ -126,17 +130,17 @@ for shape in grid.shapes():
 
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 from DrifterDataAnalysisTools import plot_grid_ellipses
 
 ax = plt.gca()
+
 for e in Ells:
     ax.add_artist(e)
     e.set_clip_box(ax.bbox)
     e.set_alpha(rand())
     e.set_facecolor(rand(3))
-ax.set_xlim(-100,-200)
-ax.set_ylim(0,-100)
+ax.set_xlim(0,1000)
+ax.set_ylim(0,1000)
 plt.show()
 
 
