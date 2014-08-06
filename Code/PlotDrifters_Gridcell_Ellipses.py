@@ -11,7 +11,8 @@ import numpy as np
 import scipy
 import gpxpy
 import shapefile ## from pyshp
-import datetime as dt
+import datetime as dt4
+from matplotlib.patches import Ellipse
 
 ## My functions:
 from DrifterDataAnalysisTools import Drifter_Map, speed_and_bearing, my_parser
@@ -71,9 +72,7 @@ if by_dep!=None:
 
 #### Analyze by Gridcell
 gridcount=len(grid.shapes()) ##establish grid count
-AllGridValues=pd.DataFrame()
-
-fig,ax = plt.subplots()
+Ells = []
 for shape in grid.shapes():
     ## get center of shape by finding the mean lat and lon of all points in shapefile polygon
     grid_lons,grid_lats = [],[] # create empty lists for each polygon (grid cell)
@@ -84,42 +83,60 @@ for shape in grid.shapes():
     ## get points from the Gridcell
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
     if len(gridpoints) >= 2:
-        data= gridpoints[['easting','northing']].values
-        mean_x = gridpoints['easting'].mean()
-        mean_y = gridpoints['northing'].mean()
-        gridpoints['corrected x'] = gridpoints['easting']-mean_x #X data with the means subtracted
-        gridpoints['corrected y'] = gridpoints['northing']-mean_y #Y data with the means subtracted
-        corr_data = gridpoints[['corrected x','corrected y']].values
-        covData = np.cov(corr_data.T) #calculate covariance matrix
-        print gridpoints[['corrected x','corrected y']].values.shape
+        uv= gridpoints[['easting','northing']].values
+        u, v = gridpoints['easting'].values, gridpoints['northing'].values
+        u_avg, v_avg = u.mean(), v.mean()
+        ud, vd = u-u_avg, v-v_avg
         
-        eigenValues, eigenVectors = np.linalg.eig(covData) 
+        cov_uv = np.cov(uv.T) ##transpose array
+        uv = cov_uv[0,1]
+        uu = cov_uv[0,0]
+        vv = cov_uv[1,1]
+        angle = 0.5*math.atan2(2*uv,uu-vv)
         
+        ua = ud*cos(angle)+vd*sin(angle)
+        va = vd*cos(angle)-ud*sin(angle)
         
-        idx = eigenValues.argsort()[::-1]   
-        eigenValues = eigenValues[idx]
-        eigenVectors = eigenVectors[:,idx]
+        cov_uva = np.cov([ua,va])
+        uva = cov_uva[0,1]
+        uua = cov_uva[0,0]
+        vva = cov_uva[1,1]
         
+        ra, rb = sqrt(uua), sqrt(vva)
+        ellipseX = ra*cos(frange(0,2*pi,2*pi/300))*cos(angle)-sin(angle)*rb*sin(frange(0,2*pi,2*pi/300))
+        ellipseY = ra*cos(frange(0,2*pi,2*pi/300))*sin(angle)+cos(angle)*rb*sin(frange(0,2*pi,2*pi/300))
         
-        eigenValues, eigenVectors, score= princomp(data)
+        Major_x1,Major_x2 = [-sqrt(uua)*cos(angle),sqrt(uua)*cos(angle)] 
+        Major_y1,Major_y2 = [-sqrt(uua)*sin(angle),sqrt(uua)*sin(angle)]
+        Minor_x1,Minor_x2 = [-sqrt(vva)*cos(pi/2-angle), sqrt(vva)*cos(pi/2-angle)]
+        Minor_y1,Minor_y2 = [sqrt(vva)*sin(pi/2-angle),-sqrt(vva)*sin(pi/2-angle)]
         
+#        plt.plot(ud,vd,'og')
+#        plt.plot(ellipseX,ellipseY,c='k')
+#        plt.plot([Major_x1,Major_x2],[Major_y1,Major_y2],c='r')
+#        plt.plot([Minor_x1,Minor_x2],[Minor_y1,Minor_y2],c='g')
+#        plt.axis('equal')        
         
-        randColor= np.random.rand(3,1)
-
-        
-        plt.plot([0, -eigenVectors[0,0]*2]+mean_x, [0, -eigenVectors[0,1]*2]+mean_y,c=randColor)
-        plt.plot([0, eigenVectors[1,0]*2]+mean_x, [0, eigenVectors[1,1]*2]+mean_y,c=randColor)
-        plt.scatter(gridpoints['easting'],gridpoints['northing'],c=randColor)
-        plt.axis('equal')        
-        
+        XY = np.array([grid_lon,grid_lat])
+        Width=((Major_x1-Major_x2)**2.0 + (Major_y1-Major_y2)**2.0)**0.5
+        Height=((Minor_x1-Minor_x2)**2.0 + (Minor_y1-Minor_y2)**2.0)**0.5
+        Ells.append(Ellipse(xy=XY,width=Width,height=Height,angle=degrees(angle)))
 
     gridcount-=1 # count down from total length of grid by 1  
 
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-#Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 from DrifterDataAnalysisTools import plot_grid_ellipses
 
+ax = plt.gca()
+for e in Ells:
+    ax.add_artist(e)
+    e.set_clip_box(ax.bbox)
+    e.set_alpha(rand())
+    e.set_facecolor(rand(3))
+ax.set_xlim(-100,-200)
+ax.set_ylim(0,-100)
 plt.show()
 
 
