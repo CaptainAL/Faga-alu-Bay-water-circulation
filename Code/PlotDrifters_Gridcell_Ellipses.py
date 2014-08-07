@@ -16,7 +16,7 @@ from matplotlib.patches import Ellipse
 from matplotlib.transforms import Bbox
 
 ## My functions:
-from DrifterDataAnalysisTools import Drifter_Map, speed_and_bearing, my_parser
+from DrifterDataAnalysisTools import Drifter_Map, speed_and_bearing, speed_and_bearing_to_file, my_parser
 from DrifterDataAnalysisTools import point_in_polygon, point_in_gridcell, point_in_launchzone
 from DrifterDataAnalysisTools import plot_arrows_by_speed, plot_arrows_by_gridcell, plot_arrows_by_launchzone
 from DrifterDataAnalysisTools import label_grid_cells, label_launch_zones
@@ -45,9 +45,12 @@ tracklist=gpx.tracks[0:]
 grid = shapefile.Reader(GISdir+'grid100m_geo.shp')
 launch= shapefile.Reader(GISdir+'Launchpads.shp')
 #### Build dataset
-#AllPoints = speed_and_bearing(tracklist,launchzoneshape=launch)
-#AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=grid,launchzoneshape=launch)
-AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') 
+create_new = False
+if create_new==True:
+    #AllPoints = speed_and_bearing(tracklist,gridshape=grid,launchzoneshape=launch)
+    AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=grid,launchzoneshape=launch)
+elif create_new==True:
+    AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') 
 
 
 ## Select deployments, cut to deployment time
@@ -73,6 +76,9 @@ if by_dep!=None:
         SelPoints= SelPoints.append(AllPoints[dep[1]['start']:dep[1]['end']]) ## [1] gets data from row tuple
         
     AllPoints=SelPoints.sort()
+    
+    AllPoints.to_csv(datadir+'AllPoints-'+by_dep+'.csv')
+
 
 Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 

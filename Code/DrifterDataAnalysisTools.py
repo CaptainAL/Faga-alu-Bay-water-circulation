@@ -148,6 +148,7 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
         Points = pd.DataFrame.from_dict(points,orient='index',dtype=np.float64).sort().resample('1Min')##if you change resample time you have to change the speed calc below
         Points.columns=['lat','lon','Y','X','Gridcell','LaunchZone']
         ##
+        Points['Gridcell']=Points['Gridcell'].round()
         Points['X before']=Points['X'].shift(1)
         Points['Y before']=Points['Y'].shift(1)
         Points['X after']=Points['X'].shift(-1)
