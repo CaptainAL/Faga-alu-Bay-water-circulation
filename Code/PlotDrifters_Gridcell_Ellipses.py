@@ -55,7 +55,7 @@ elif create_new==False:
 
 ## Select deployments, cut to deployment time
 endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
-by_dep='tide'## Set to None if you want to show all the data
+by_dep='wave'## Set to None if you want to show all the data
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
@@ -80,13 +80,14 @@ if by_dep!=None:
     AllPoints.to_csv(datadir+'AllPoints-'+by_dep+'.csv')
 
 
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 
 
 #### Analyze by Gridcell
 gridcount=len(grid.shapes()) ##establish grid count
-AllGridValues=pd.DataFrame()
 
+AllMeans=pd.DataFrame()
+AllGridValues=pd.DataFrame()
 
 for shape in grid.shapes():
     ## get center of shape by finding the mean lat and lon of all points in shapefile polygon
@@ -139,7 +140,12 @@ for shape in grid.shapes():
         # ellipses ...
         #e = Map.ax.add_artist(Ellipse(xy=XY,width=U,height=V,label=str(gridcount),color='r',fill=False,lw=1))  
         scale_factor = 500
-        ellipse_color, cNorm = mpl.cm.rainbow(len(gridpoints)), mpl.colors.Normalize(vmin=0,vmax=200) ## =Num of observations
+        NumObs = len(gridpoints)
+        
+        cMap,cNorm = mpl.cm.rainbow, mpl.colors.Normalize(vmin=0,vmax=200) ## =Num of observations
+        m = mpl.cm.ScalarMappable(norm=cNorm,cmap=cMap)
+        ellipse_color = m.to_rgba(NumObs)
+        
         #Major axis
         Map.plot([grid_lon+Major_x1*scale_factor,grid_lon+Major_x2*scale_factor],[grid_lat+Major_y1*scale_factor,grid_lat+Major_y2*scale_factor],c=ellipse_color,lw=1)
         #Minor axis        
@@ -152,8 +158,11 @@ for shape in grid.shapes():
         scale_factor = 100
         #Map.plot(grid_lon+u*scale_factor,grid_lat+v*scale_factor,'og')
         #Map.plot(grid_lon,grid_lat,'or')
-    
-        qHndl = Map.quiver(grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,color=ellipse_color)
+        
+        GridMeans = pd.DataFrame(np.array([[grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,NumObs]]),index=[gridcount],columns=['lon','lat','u','v','NumObs'])
+        AllMeans = AllMeans.append(GridMeans)
+#        qHndl = Map.quiver(grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,color=ellipse_color)
+        
         
         #Mean speed/direction
         M=gridpoints['speed m/s'].values    
@@ -188,28 +197,37 @@ for shape in grid.shapes():
 
     gridcount-=1 # count down from total length of grid by 1  
 
+def MeanEllipse_Arrows(Map,df):
+    Q =Map.quiver(df['lon'].values,df['lat'].values,df['u'].values,df['v'].values,df['NumObs'].values,cmap=plt.cm.rainbow,norm=cNorm) 
+    return Q
+qHndl =  MeanEllipse_Arrows(Map,AllMeans)
+
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 divider = make_axes_locatable(Map.ax)
 cax = divider.append_axes("right", size="5%", pad=0.05)
 cbar = mpl.colorbar.ColorbarBase(cax,cmap=plt.cm.rainbow,norm=cNorm,orientation='vertical')
 cbar.set_label('# observations')
 
+if by_dep=='wave':
+    qk = plt.quiverkey(qHndl, 0.6, -0.02,0.1*scale_factor, '0.1 m/s', labelpos='W')
 
 
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
 from DrifterDataAnalysisTools import plot_arrows_by_speed
-#plot_arrows_by_speed(Map,AllPoints)
+plot_arrows_by_speed(Map,AllPoints)
 
 
 ## Plot mean velocity 
 from DrifterDataAnalysisTools import plot_grid_ellipses_arrows
 #plot_grid_ellipses_arrows(Map,AllGridValues)
 
+#plt.suptitle('End member condition: '+by_dep)
+
 plt.show()
 
 
-plt.suptitle('End member condition: '+by_dep)
 
 plt.savefig(figdir+'drifters P axes with arrows-'+by_dep+'.png',transparent=True)
 
