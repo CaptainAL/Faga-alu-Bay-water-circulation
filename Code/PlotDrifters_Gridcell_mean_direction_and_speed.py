@@ -84,7 +84,7 @@ AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byL
 
 ## Select deployments, cut to deployment time
 endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
-by_dep='wind'## Set to None if you want to show all the data
+by_dep='tide'## Set to None if you want to show all the data
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')

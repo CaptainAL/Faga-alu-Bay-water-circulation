@@ -174,8 +174,8 @@ for shape in grid.shapes():
         for i in range(0, len(M)):
             ve = ve + M[i] * math.sin(D[i]) # calculate sum east speed components
             vn = vn + M[i] * math.cos(D[i]) # calculate sum north speed components
-        ve = - ve / len(u) # determine average east speed component
-        vn = - vn / len(u) # determine average north speed component
+        ve = - ve / len(M) # determine average east speed component
+        vn = - vn / len(M) # determine average north speed component
         u_v = math.sqrt(ve * ve + vn * vn) # calculate wind speed vector magnitude
         #Calculate wind speed vector direction
         vdir = scipy.arctan2(ve, vn)
@@ -216,7 +216,7 @@ if by_dep=='wave':
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
 from DrifterDataAnalysisTools import plot_arrows_by_speed
-plot_arrows_by_speed(Map,AllPoints)
+#plot_arrows_by_speed(Map,AllPoints)
 
 
 ## Plot mean velocity 

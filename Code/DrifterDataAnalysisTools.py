@@ -277,6 +277,19 @@ def plot_arrows_by_launchzone(Map,df):
     plt.show()
     return
 
+def plot_points_by_launchzone(Map,df,colorbar=False):
+    sc = Map.scatter(df['lon'].values,df['lat'].values,latlon=True,c=df['LaunchZone'].values,cmap=plt.get_cmap('rainbow'),edgecolor='None') # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html
+    if colorbar==True:        
+        ## Colorbar, scaled to image size
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        divider = make_axes_locatable(Map.ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        cbar =plt.colorbar(sc, cax=cax)
+        cbar.set_label('Launch Zone')
+        cbar.set_ticks(range(6))
+    plt.show()
+    return
+
 def label_grid_cells(Map,gridshape):
     labelcount=len(gridshape.shapes())
     for shape in gridshape.shapes():
