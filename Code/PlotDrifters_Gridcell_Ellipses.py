@@ -141,10 +141,13 @@ for shape in grid.shapes():
         #e = Map.ax.add_artist(Ellipse(xy=XY,width=U,height=V,label=str(gridcount),color='r',fill=False,lw=1))  
         scale_factor = 500
         NumObs = len(gridpoints)
+        MeanSpeed = gridpoints['speed m/s'].dropna().values.mean() 
+        print 'MeanSpeed= '+str(MeanSpeed)
         
-        cMap,cNorm = mpl.cm.rainbow, mpl.colors.Normalize(vmin=0,vmax=200) ## =Num of observations
+        cMap,cNorm = mpl.cm.rainbow, mpl.colors.Normalize(vmin=0,vmax=1) ## =Num of observations
         m = mpl.cm.ScalarMappable(norm=cNorm,cmap=cMap)
         ellipse_color = m.to_rgba(NumObs)
+        ellipse_color = m.to_rgba(MeanSpeed)
         
         #Major axis
         Map.plot([grid_lon+Major_x1*scale_factor,grid_lon+Major_x2*scale_factor],[grid_lat+Major_y1*scale_factor,grid_lat+Major_y2*scale_factor],c=ellipse_color,lw=1)
@@ -153,13 +156,12 @@ for shape in grid.shapes():
         #Ellipse        
         Map.plot(grid_lon+ellipseX*scale_factor,grid_lat+ellipseY*scale_factor,c=ellipse_color,lw=1)
         
-        
         ##Raw point data (easting/northing)
         scale_factor = 100
         #Map.plot(grid_lon+u*scale_factor,grid_lat+v*scale_factor,'og')
         #Map.plot(grid_lon,grid_lat,'or')
         
-        GridMeans = pd.DataFrame(np.array([[grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,NumObs]]),index=[gridcount],columns=['lon','lat','u','v','NumObs'])
+        GridMeans = pd.DataFrame(np.array([[grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,NumObs,MeanSpeed]]),index=[gridcount],columns=['lon','lat','u','v','NumObs','MeanSpeed'])
         AllMeans = AllMeans.append(GridMeans)
 #        qHndl = Map.quiver(grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,color=ellipse_color)
         
@@ -198,7 +200,7 @@ for shape in grid.shapes():
     gridcount-=1 # count down from total length of grid by 1  
 
 def MeanEllipse_Arrows(Map,df):
-    Q =Map.quiver(df['lon'].values,df['lat'].values,df['u'].values,df['v'].values,df['NumObs'].values,cmap=plt.cm.rainbow,norm=cNorm) 
+    Q =Map.quiver(df['lon'].values,df['lat'].values,df['u'].values,df['v'].values,df['MeanSpeed'].values,cmap=plt.cm.rainbow,norm=cNorm) 
     return Q
 qHndl =  MeanEllipse_Arrows(Map,AllMeans)
 
@@ -229,7 +231,7 @@ plt.show()
 
 
 
-plt.savefig(figdir+'drifters P axes with arrows-'+by_dep+'.png',transparent=True)
+#plt.savefig(figdir+'Paxes gridded/'+'drifters P axes with arrows-'+by_dep+'.svg',transparent=True)
 
 
 

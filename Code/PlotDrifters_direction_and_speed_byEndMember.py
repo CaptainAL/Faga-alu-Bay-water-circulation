@@ -14,32 +14,7 @@ This code
  converts points to UTM meters
  calculates distance from point to point
  calculates the compass bearing (0-360 degrees from North(=0deg))
- plots arrows colored by the speed
- plots points colored by the speed
- 
-Next steps:
-select points by:
-    day or forcing (Tide,Wind,Wave)
-    launch point (if first point in track is in Launchpad...)
-        shapefile of polygons: http://matplotlib.org/faq/howto_faq.html#test-whether-a-point-is-inside-a-polygon
-    grid cell
-
-Fig 6
-plot tracks from different day/forcing
-    color by launch point
-    limit to 1hour drift time
-
-Fig 7
-calculate variance/PCR on the points that meet those criteria
-    show ellipse in center of each grid cell
-    color ellipse by count of samples (number of points)
-Fig 8?
-calculate mean heading and mean speed
-    show arrow in center of each grid cell (I think you set arrow location to 'midpoint' or something so tail isn't at center of grid)
-    size of arrow by mean speed
-    color arrow by count of samples (number of points)
-
-    
+ plots progressive vectors
  
 @author: Alex
 """
@@ -84,7 +59,7 @@ AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byL
 
 ## Select deployments, cut to deployment time
 endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
-by_dep='tide'## Set to None if you want to show all the data
+by_dep='all'## Set to None if you want to show all the data
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
@@ -109,17 +84,17 @@ if by_dep!=None:
     
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=False,labelBinGrid=False,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 
 from DrifterDataAnalysisTools import plot_arrows_by_speed
-#plot_arrows_by_speed(Map,AllPoints)
+plot_arrows_by_speed(Map,AllPoints)
 from DrifterDataAnalysisTools import plot_points_by_launchzone
 AllPoints = AllPoints[AllPoints['LaunchZone']>0]
-plot_points_by_launchzone(Map,AllPoints,colorbar=False)
+#plot_points_by_launchzone(Map,AllPoints,colorbar=False)
 
 #plt.suptitle('End member condition: '+by_dep)
 
-plt.savefig(figdir+'drifters velocity-'+by_dep+'.png',transparent=True)
+plt.savefig(figdir+'Velocity gridded/'+'drifters velocity-'+by_dep+'.svg',transparent=True)
 
 
 

@@ -1,0 +1,5 @@
+drifters gridded mean velocity figs created by:
+PlotDrifters_Gridcell_mean_direction_and_speed.py 
+
+drifters velocity arrows with grid figs created by:
+PlotDrifters_direction_and_speed_byEndMember.py

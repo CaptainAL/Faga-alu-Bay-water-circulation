@@ -80,7 +80,7 @@ if by_dep!=None:
     AllPoints.to_csv(datadir+'AllPoints-'+by_dep+'.csv')
 
 
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 
 
 #### Analyze by Gridcell
@@ -177,7 +177,7 @@ plt.show()
 
 
 
-plt.savefig(figdir+'drifters Res Time-'+by_dep+'.png',transparent=True)
+plt.savefig(figdir+'drifters Res Time-'+by_dep+'.svg',transparent=True)
 
 
 

@@ -84,7 +84,7 @@ AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byL
 
 ## Select deployments, cut to deployment time
 endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
-by_dep='tide'## Set to None if you want to show all the data
+by_dep='wave'## Set to None if you want to show all the data
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
@@ -153,8 +153,8 @@ for shape in shapef.shapes():
         #x,y= gMap(grid_lon,grid_lat)
         #plt.text(x,y,'%.0f'%GridMean_bearing,color='w')
     gridcount-=1 # count down from total length of grid by 1  
-print 'Max speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].max())
-print 'Min speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed m/s'].min())
+print 'Max speed for endmember condition: '+by_dep+' '+'%.2f'%AllGridValues['speed m/s'].max()
+print 'Min speed for endmember condition: '+by_dep+' '+'%.2f'%AllGridValues['speed m/s'].min()
 #    GridMean_speed = gridpoints['speed m/s'].max()
 #    GridMean_x = gridpoints['x'].sum()
 #    GridMean_y= gridpoints['y'].sum()
@@ -164,13 +164,14 @@ print 'Min speed for endmember condition: '+by_dep+' '+str(AllGridValues['speed 
     
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=True,showLaunchZones=False)  
 from DrifterDataAnalysisTools import plot_mean_grid_velocity
 sc=plot_mean_grid_velocity(Map,AllGridValues)
 #plot_arrows_by_speed(Map,AllPoints)
 
 #plt.suptitle('End member condition: '+by_dep)
 
+#plt.savefig(figdir+'Velocity gridded/'+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
 plt.savefig(figdir+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
 
 
