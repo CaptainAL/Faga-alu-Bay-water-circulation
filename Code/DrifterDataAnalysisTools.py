@@ -18,6 +18,46 @@ import gpxpy
 import utm
 import shapefile ## from pyshp
 
+def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,labelBinGrid=True,showLaunchZones=False):
+    figdir=dirs['fig']
+    GISdir = dirs['GIS']
+    ## Map Extents: Local, Island, Region
+    if MapExtent=='Local':
+        ll, ur = [-14.294238,-170.683732],[-14.286362, -170.673260] 
+        ll, ur = [-14.295337283,-170.684163993],[-14.285531852, -170.673919854]
+    elif MapExtent=='Island':
+        ll, ur= [-14.4,-170.8], [-14.23, -170.54]
+    elif MapExtent=='Region':
+        ll, ur = [-20,-177],[-14,-170]
+    ## Make Plot
+    fig, ax = plt.subplots(1)
+    #fig.patch.set_visible(False)
+    #ax.axis('off')
+    gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
+    #### Show background image from DriftersBackground.mxd
+    if showBackgroundImage==True:
+        background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground_matchCurts.png'))
+        gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
+    #### Show Lat/Lon Grid        
+    if showLatLonGrid==True:       
+        gMap.drawparallels(np.arange(ll[0],ur[0],.001),labels=[1,1,0,0])
+        gMap.drawmeridians(np.arange(ll[1],ur[1],.001),labels=[0,0,0,1])
+    #### Show Shapefiles:
+    if showWatershed==True:
+        gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
+    if showBinGrid==True:
+        gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo',color='w') ## Display 100m grid cells for statistical analysis
+    if labelBinGrid==True:
+        gridshape=shapefile.Reader(GISdir+'grid100m_geo.shp')
+        labelcount=len(gridshape.shapes())
+        for shape in gridshape.shapes():
+            x,y= gMap(shape.points[0][0],shape.points[0][1])
+            plt.text(x,y,labelcount,color='w')
+            #print str(labelcount)+' '+str(shape.points[0][0])+' '+str(shape.points[0][1])
+            labelcount-=1
+    if showLaunchZones==True:
+        gMap.readshapefile(GISdir+'Launchpads','Launchpads') ## Display launch zones
+    return gMap
 
 def my_parser(x,y):#x is the date, y is the time
             y = str(int(y))
@@ -26,6 +66,7 @@ def my_parser(x,y):#x is the date, y is the time
             time=dt.time(int(hour),int(minute))
             parsed=dt.datetime.combine(x,time)
             return parsed
+
 def point_in_polygon(x,y,poly):
     n = len(poly)
     inside = False
@@ -72,49 +113,37 @@ def point_in_launchzone(launchzoneshape,count,point):
 
 def bearing(pointA, pointB):
     import math
-#"""
 #Calculates the bearing between two points.
-# 
 #The formulae used is the following:
 #θ = atan2(sin(Δlong).cos(lat2),
 #cos(lat1).sin(lat2) − sin(lat1).cos(lat2).cos(Δlong))
-# 
 #:Parameters:
 #- `pointA: The tuple representing the latitude/longitude for the
 #first point. Latitude and longitude must be in decimal degrees
 #- `pointB: The tuple representing the latitude/longitude for the
 #second point. Latitude and longitude must be in decimal degrees
-# 
 #:Returns:
 #The bearing in degrees
-# 
 #:Returns Type:
 #float
 #"""
     if (type(pointA) != tuple) or (type(pointB) != tuple):
         raise TypeError("Only tuples are supported as arguments")
- 
     lat1 = math.radians(pointA[0])
     lat2 = math.radians(pointB[0])
-     
     diffLong = math.radians(pointB[1] - pointA[1])
-     
     x = math.sin(diffLong) * math.cos(lat2)
     y = math.cos(lat1) * math.sin(lat2) - (math.sin(lat1) * math.cos(lat2) * math.cos(diffLong))
-     
     initial_bearing = math.atan2(x, y)
-     
     # Now we have the initial bearing but math.atan2 return values
     # from -180° to + 180° which is not what we want for a compass bearing
     # The solution is to normalize the initial bearing as shown below
     initial_bearing = math.degrees(initial_bearing)
     compass_bearing = (initial_bearing + 360) % 360
-     
     return compass_bearing  
 
 #### from a tracklist of GPS points this constructs a DataFrame
 #### with the speed, compass bearing, Launchzone and Grid cell of the point
-
 def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
     AllPoints = pd.DataFrame() ## create empty dataframes to start
     for track in tracklist:
@@ -137,12 +166,10 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
                         LaunchZone=point_in_launchzone(launchzoneshape,count,point)
                     else:
                         pass
-                    
                 ## Get point data (lat,lon,UTM x, UTM y,LaunchZone)
                 lat,lon = point.latitude,point.longitude
                 lat_utm,lon_utm = utm.from_latlon(point.latitude,point.longitude)[0],utm.from_latlon(point.latitude,point.longitude)[1]
                 points[point.time]=(lat,lon,lat_utm,lon_utm,Gridcell,LaunchZone) ## utm.py returns the zone as well, just need northing and easting
-        
         ## Calculates speed and direction per point in each track      
         #### Calcs
         Points = pd.DataFrame.from_dict(points,orient='index',dtype=np.float64).sort().resample('1Min')##if you change resample time you have to change the speed calc below
@@ -156,17 +183,13 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
         ## Calculate Easting and Northing (m)
         Points['easting']= Points['X before']-Points['X']     
         Points['northing']=Points['Y before']-Points['Y']
-        
         ## Calculate distance by pythagorean theorem
         Points['distance m'] = ((Points['X']-Points['X before'])**2.0 + (Points['Y']-Points['Y before'])**2.0)**0.5
         Points['speed m/s']= Points['distance m']/60 ## Speed = Distance/Time (Time is 1Min=60sec **above in .resample(1Min))
-        
         Points['lon before']=Points['lon'].shift(1)
         Points['lat before']=Points['lat'].shift(1)
-        
         Points['lon after']=Points['lon'].shift(-1)
         Points['lat after']=Points['lat'].shift(-1)
-        
         ## To calculate direction in degrees:
         ## change lat/lon to radians for calculating bearing
         ## technique from: https://gist.github.com/jeromer/2005586
@@ -183,7 +206,6 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
         Points['lat before']=Points['lat'].shift(1)
         Points['lon after']=Points['lon'].shift(-1)
         Points['lat after']=Points['lat'].shift(-1)
-        
     #    print 'Mean Track Speed (m/s): '+str("%.2f" % Points['speed m/s'].mean())
         AllPoints = AllPoints.append(Points) ## append each track to the whole dataset
         AllPoints = AllPoints.sort()
@@ -199,48 +221,6 @@ def speed_and_bearing_to_file(dirs,tracklist,gridshape=None,launchzoneshape=None
 #launchshapef = shapefile.Reader(GISdir+'Launchpads.shp')
 #gridshapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 #AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=gridshapef,launchzoneshape=launchshapef)
-    
-def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,labelBinGrid=True,showLaunchZones=False):
-    figdir=dirs['fig']
-    GISdir = dirs['GIS']
-    ## Map Extents: Local, Island, Region
-    if MapExtent=='Local':
-        ll, ur = [-14.294238,-170.683732],[-14.286362, -170.673260] 
-        ll, ur = [-14.295337283,-170.684163993],[-14.285531852, -170.673919854]
-    elif MapExtent=='Island':
-        ll, ur= [-14.4,-170.8], [-14.23, -170.54]
-    elif MapExtent=='Region':
-        ll, ur = [-20,-177],[-14,-170]
-    ## Make Plot
-    fig, ax = plt.subplots(1)
-    #fig.patch.set_visible(False)
-    #ax.axis('off')
-    gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
-    #### Show background image from DriftersBackground.mxd
-    if showBackgroundImage==True:
-        background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground_matchCurts.png'))
-        gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
-    #### Show Lat/Lon Grid        
-    if showLatLonGrid==True:       
-        gMap.drawparallels(np.arange(ll[0],ur[0],.001),labels=[1,1,0,0])
-        gMap.drawmeridians(np.arange(ll[1],ur[1],.001),labels=[0,0,0,1])
-    #### Show Shapefiles:
-    if showWatershed==True:
-        gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
-    if showBinGrid==True:
-        gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo',color='w') ## Display 100m grid cells for statistical analysis
-    if labelBinGrid==True:
-        gridshape=shapefile.Reader(GISdir+'grid100m_geo.shp')
-        labelcount=len(gridshape.shapes())
-        for shape in gridshape.shapes():
-            x,y= gMap(shape.points[0][0],shape.points[0][1])
-            plt.text(x,y,labelcount,color='w')
-            #print str(labelcount)+' '+str(shape.points[0][0])+' '+str(shape.points[0][1])
-            labelcount-=1
-    if showLaunchZones==True:
-        gMap.readshapefile(GISdir+'Launchpads','Launchpads') ## Display launch zones
-        
-    return gMap
     
 def plot_arrows_by_speed(Map,df):
     sc=Map.quiver(df['lon'].values,df['lat'].values,sin(radians(df['bearing'])),cos(radians(df['bearing'])),df['speed m/s'].values,latlon=True,cmap=plt.cm.rainbow,norm=mpl.colors.Normalize(vmin=0,vmax=0.5),scale=40,pivot='middle',headwidth=5,headlength=5,headaxislength=5,edgecolors='grey',linewidths=0.2) # https://www.mail-archive.com/matplotlib-users@lists.sourceforge.net/msg22229.html

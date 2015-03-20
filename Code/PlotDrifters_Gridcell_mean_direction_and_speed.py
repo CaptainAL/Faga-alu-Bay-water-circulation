@@ -17,30 +17,7 @@ This code
  plots arrows colored by the speed
  plots points colored by the speed
  
-Next steps:
-select points by:
-    day or forcing (Tide,Wind,Wave)
-    launch point (if first point in track is in Launchpad...)
-        shapefile of polygons: http://matplotlib.org/faq/howto_faq.html#test-whether-a-point-is-inside-a-polygon
-    grid cell
 
-Fig 6
-plot tracks from different day/forcing
-    color by launch point
-    limit to 1hour drift time
-
-Fig 7
-calculate variance/PCR on the points that meet those criteria
-    show ellipse in center of each grid cell
-    color ellipse by count of samples (number of points)
-Fig 8?
-calculate mean heading and mean speed
-    show arrow in center of each grid cell (I think you set arrow location to 'midpoint' or something so tail isn't at center of grid)
-    size of arrow by mean speed
-    color arrow by count of samples (number of points)
-
-    
- 
 @author: Alex
 """
 import matplotlib.pyplot as plt
