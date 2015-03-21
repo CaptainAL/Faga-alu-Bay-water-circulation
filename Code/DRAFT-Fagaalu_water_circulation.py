@@ -152,14 +152,20 @@ Forcing_data_timeseries = {'filename':maindir+'Figures/Forcing/AmSam_ADCPdrifter
 ### ADCP measurements
 ADCP_measurements = {'filename':maindir+'Figures/ADCP measurements/Figure4_ADCP.png', 'fig_num':str(fig_count())}
 
+### All Drifter tracks
+ALL_Drifter_tracks = {'filename':maindir+'Figures/ALL drifter tracks/drifters_all_arrows_speed.png', 'fig_num':str(fig_count())}
+
 ### Progressive Vectors vs drifter tracks
 Progressive_Vectors_ADCP_vs_Drifters = {'filename':maindir+'Figures/Progressive Vectors/Figure6_progvec_driftervelocity.png', 'fig_num':str(fig_count())}
+
+## Gridded PCA by endmember
+PCA_gridded = {'filename':maindir+'Figures/Gridded PCA endmembers/Figure7_paxes_map_OMC.png', 'fig_num':str(fig_count())}
 
 ### Gridded velocity by endmember
 Gridded_Velocity_endmembers = {'filename':maindir+'Figures/Gridded velocity endmembers/Fagaalu_velocity-endmembers.png', 'fig_num':str(fig_count())}
 
-## Gridded PCA by endmember
-PCA_gridded = {'filename':maindir+'Figures/Gridded PCA endmembers/Figure7_paxes_map_OMC.png', 'fig_num':str(fig_count())}
+### Gridded residence time by endmember
+Gridded_ResidenceTime_endmembers = {'filename':maindir+'Figures/Residence Times/Fagaalu_gridded_residence_time.png','fig_num':str(fig_count())}
 
 ###### EQUATIONS ############################################################################################################################################
 equation_count=0
@@ -196,6 +202,7 @@ abstract_title = document.add_heading('ABSTRACT',level=2)
 abstract_title.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 abstract = document.add_paragraph("Hydrodynamic processes on coral reefs are important for nutrient cycling, larval dispersal, temperature variability, and understanding the impacts on coral reef ecosystems from terrestrial sediment, nutrients, and contaminants from adjacent impaired watersheds. In order to understand the spatial and temporal variability in flow velocities and the resulting residence time of water in the fringing coral reef flat-lined embayment of Faga'alu, on the island of Tutuila in American Samoa, data from three bottom-mounted acoustic current profilers and 102 (4-5 drifters x 21 deployments) individual Lagrangian ocean surface current drifter deployments were combined with meteorologic data and numerical wave model results. These data and model results, collected over nine days, made it possible to evaluate the relative contribution of tidal, wind, and wave forcing on the flow patterns. The high number of drifter deployments made it possible for the velocity data to be binned into 100 m x 100 m grid cells and the resulting residence times computed for the different sets of forcing conditions. Cumulative progressive vectors calculated from the acoustic current profilers closely matched the tracks from concurrently-deployed surface current drifters, showing the applicability of this hybrid Lagrangian-Eulerian measurement scheme to understand flow patterns in this geomorphically-complex embayment. Mean current speeds (residence times) varied from 1-37 cm/s (2.8-0.1 hr), 1-36 cm/s (2.8-0.1 hr), and 5-64 cm/s (0.6-0.04 hr) under tidal, wind, and wave forcing, respectively; the highest speeds (lowest residence times) were measured on the outer reef flat closest to where waves were breaking on the reef crest and were slowest (longest) over the inner reef flat close to shore and deep in the embayment. ")
 
+document.add_paragraph("scripted terms: km2")
 
 #### INTRODUCTION
 introduction_title = document.add_heading('Introduction',level=2)
@@ -211,7 +218,7 @@ document.add_paragraph("Little data on current circulation around Tutuila is ava
 #### STUDY AREA
 study_area_title = document.add_heading('Study Area',level=2)
 
-document.add_paragraph("Faga'alu Bay, on the island of Tutuila, American Samoa (14.290738 S, 170.677836 W) is a V-shaped, reef-fringed embayment at the mouth of a small, steep-sided watershed (2.48 km2)(Figure "+Study_Area_map['fig_num']+"). An anthropogenically altered, vertical-walled, 10-20m deep paleo-stream channel extends from the mouth of Faga'alu Stream eastward to Pago Pago Bay. This deep channel ('ava in Samoan language) divides the reef into a larger southern and a smaller northern section.")
+document.add_paragraph("Faga'alu Bay, on the island of Tutuila, American Samoa (14.290 S, 170.677 W) is a V-shaped, reef-fringed embayment at the mouth of a small, steep-sided watershed (2.48 km2)(Figure "+Study_Area_map['fig_num']+"). An anthropogenically altered, vertical-walled, 10-20m deep paleo-stream channel extends from the mouth of Faga'alu Stream eastward to Pago Pago Bay. This deep channel ('ava in Samoan language) divides the reef into a larger southern and a smaller northern section.")
 
 ## Study Area map
 if 'Study_Area_map' in locals():
@@ -222,7 +229,7 @@ document.add_paragraph("Faga'alu Bay is situated on the western side of Pago Pag
 
 if 'Bay_clear' in locals():
     document.add_picture(Bay_clear['filename'],width=Inches(6))
-    add_figure_caption(Bay_clear['fig_num']," Image of the embayment on a typical day, with the darker areas of the bay being live coral, and the light areas being carbonate sand.")  
+    add_figure_caption(Bay_clear['fig_num']," Image of the embayment on a typical, rain-free day. The darker areas of the bay are live coral, and the light areas are deeper pools with carbonate sand bottom.")  
 if 'Bay_sedplume' in locals():
     document.add_picture(Bay_sedplume['filename'],width=Inches(6))
     add_figure_caption(Bay_sedplume['fig_num'],"Image of a flood plume (2/21/14) in the northern portion of the bay following a heavy precipitation event. Plumes usually persist for several hours, and rarely are seen after 24h due to the flushing of water through the deep channel and out to sea.")    
@@ -230,110 +237,126 @@ if 'Bay_sedplume' in locals():
 #### METHODS
 methods_title = document.add_heading('Methods',level=2)
 
+document.add_paragraph("In a previous water circulation study in Faga'alu, Vetter (2013) used wave/tide data and current speed in the reef channel to calculate flushing time of the bay's total volume. Those calculations are highly dependent on the estimation of total volume in the bay and reliant on bathymetry data which is not well verified. Calculations of flushing time also do not provide information on the spatial distribution of flow speeds or specific flow paths over the reef. Since it is known that residence time of water, in addition to water quality, is a strong control on coral health, it is desirable to characterize spatially distributed flow paths and residence times in relation to wave, wind, and tide forcings.")
+
 ## Combining Eulerian and Lagrangian methods
 document.add_heading('Combining Eulerian and Lagrangian methods',level=3)
-
-document.add_paragraph("While Vetter (2013) used wave/tide data and current speed in the reef channel to calculate flushing time, those calculations are highly dependent on the estimation of total volume in the bay and reliant on bathymetry data which is not well verified. Calculations of flushing time also do not provide information on the spatial distribution of flow speeds or specific flow paths over the reef. Since it is known that residence time of water, in addition to water quality, is a strong control on coral health, it is desirable to characterize spatially distributed residence times in relation to wave, wind, and tide forcings.")
-
-document.add_paragraph("To characterize the spatial pattern of flows over the reef flat in Faga'alu Bay, and determine the relationship between offshore wave forcing and residence time of water over the reef flat, a combination of Eulerian and Lagrangian measurements is used. In fluid dynamics there are two ways to quantify the flow field: 1) the Lagrangian perspective observes an individual fluid parcel as it moves through space and time, 2) the Eulerian perspective focuses on specific locations, observing the fluid flow past that location over time. Eulerian methods characterize water circulation on the reef using bottom-mounted instruments to record wave height and period, current speed and direction, and/or tidal elevation (Presto et al., 2006; Storlazzi et al., 2009), however, collecting high spatial resolution data of hydrodynamic processes using strictly Eulerian methods is expensive and logistically difficult (Curt D. Storlazzi et al., 2006; Storlazzi et al., 2004). While imagery-based remote sensing is useful to map the temporal and spatial distribution of flood plume boundaries (Klemas, 2012; Warrick et al., 2007), the underlying current circulation is a strong control on sediment transport that may not be quantified by even high resolution remote sensing of plumes. Spatially distributed wave height, current speeds, and flow patterns can be predicted by hydrodynamic computer models (Hoeke et al., 2011), but models typically require accurate bathymetry, detailed forcing data, and significant modeling expertise (Hoeke, 2010; King et al., 2012; Wolanski et al., 2009). Lagrangian methods including the use of GPS-tracking drifters have been used to map flow patterns over reef flats to compare to Eulerian descriptions of flow speeds (C. D. Storlazzi et al., 2006; Storlazzi et al., 2004; Wyatt et al., 2012) or validate hydrodynamic computer models (Ouillon et al., 2010).")
+document.add_paragraph("To characterize the spatial pattern of flows over the reef flat in Faga'alu Bay, and determine the relationship between offshore wave forcing and residence time of water over the reef flat, a combination of Eulerian and Lagrangian measurements is used. In fluid dynamics there are two ways to quantify the flow field: 1) the Lagrangian perspective observes an individual fluid parcel as it moves through space and time, 2) the Eulerian perspective focuses on specific locations, observing the fluid flow past that location over time. Eulerian methods characterize water circulation on the reef using bottom-mounted instruments to record wave height and period, current speed and direction, and/or tidal elevation (Presto et al., 2006; Storlazzi et al., 2009), however, collecting high spatial resolution data of hydrodynamic processes using strictly Eulerian methods is expensive and logistically difficult (Curt D. Storlazzi et al., 2006; Storlazzi et al., 2004). While imagery-based remote sensing is useful to map the temporal and spatial distribution of flood plume boundaries (Klemas, 2012; Warrick et al., 2007), the underlying current circulation is a strong control on sediment transport that may not be quantified by even high resolution remote sensing of plumes. Spatially distributed wave height, current speeds, and flow patterns can be predicted by hydrodynamic computer models (Hoeke et al., 2011), but models typically require accurate bathymetry, detailed forcing data, and significant modeling expertise (Hoeke, 2010; King et al., 2012; Wolanski et al., 2009). Lagrangian methods including the use of GPS-tracking drifters have been used to map flow patterns over reef flats to compare to Eulerian descriptions of flow speeds (C. D. Storlazzi et al., 2006; Storlazzi et al., 2004; Wyatt et al., 2012) or validate hydrodynamic computer models (Ouillon et al., 2010). For this study, Lagrangian drifters were used to collect spatially distributed data on flow velocities, in conjunction with Eulerian current profilers to collect long-term data at fixed locations.")
 
 document.add_paragraph("Drifter studies in nearshore environments are typically limited in number of drifters, number of deployments, and the range of oceanic and meteorological conditions experienced during deployments, making it uncertain whether they describe the dominant patterns, or short-lived anomalies (C. D. Storlazzi et al., 2006; Wyatt et al., 2010).  While Lagrangian measurements provide spatially explicit data on the flow field, observations are limited temporally by their short duration times relative to Eulerian methods like in situ current meters. Storlazzi et al., (2006) successfully combined Eulerian and Lagrangian methods by comparing Lagrangian drifter tracks with progressive vectors of cumulative flow calculated from Eulerian current meters to determine if short-term observations from drifters were representative of the dominant patterns. This approach yields spatially distributed flow data from the Lagrangian drifters, within the context of the longer time series of flow forcing from the Eulerian methods.")
 
 ## Lagrangian measurements (GPS-logging drifters)
-document.add_heading('Lagrangian measurements (GPS-logging drifters)',level=4)
+document.add_heading('Lagrangian measurements (GPS-logging drifters)',level=3)
 document.add_paragraph("GPS-tracking drifters have been traditionally used to characterize oceanic circulation in the deep or coastal ocean (Davis, 1991; Warrick et al., 2007), but cheaper, smaller GPS technology has recently made it possible to deploy many small drifters in nearshore environments to map flow patterns at finer spatiotemporal resolution (Austin and Atkinson, 2004; Johnson et al., 2003; MacMahan et al., 2010). Research on rip currents in beach surf zones have shown the ability to capture synoptic measurements of small-scale flow structures and patterns by deploying large numbers of GPS-logging drifters to collect high-density observations of flow speeds and directions (Johnson et al., 2003; MacMahan et al., 2010). While deploying a fleet of GPS-logging drifters has yielded synoptic measurements of water movement in surf zones near linear, sandy beaches, it has not been attempted in a shallow reef environment.")
 
-document.add_paragraph("Faga'alu Bay is a relatively small area (0.25km2) so very high density drifter data could be collected with a small number of drifters (n=5) and field personnel (n=1). Drifter designs typically involve the use of a suspended drogue (Johnson et al., 2003; Ouillon et al., 2010) or a finned tube (MacMahan et al., 2009) to extend into and anchor the drifter in the water column. However, due to the shallow conditions experienced on reef flats a novel drifter design was needed. Drifters for shallow coral reef environments need to be shallow enough to avoid interaction with corals, deep enough to not be affected by the surface movements, extend high enough to be visible but not high enough to be affected by winds, and finally, rugged enough to sustain the impact of a breaking wave onto corals in the event it is entrained in the surf zone. Five drifters were designed and constructed with materials avaialable on-island, from PVC tubing and plastic sheeting, with a small waterproof housing for the GPS recorder (HOLUX M1000), and a float collar to maintain upright orientation (Figure "+Drifter_ADCP_pics['fig_num']+"). The fins of the drifters were roughly 300 mm wide and 180 mm in height, constructed of 13mm diameter PVC pipe and elbows, with holes drilled to flood the piping and compensate for the buoyancy of the pipe. The GPS logger was housed in a PVC housing comprised of an end cap, a short piece of 50 mm diameter pipe, a threaded female adapter and a cleanout plug. A hole was drilled in the cleanout plug to accomodate a stainless steel hose clamp for attaching the logger housing to the fins, and the hole was plugged with epoxy. The drifters were transported to the launch zones and retrieved using a stand-up paddle board (SUP) which had advantages over motorized craft or kayaks due to the low cost, single man operation, and better visibility to track the drifters. Deployments were conducted opportunistically to capture "+'"end-member"'+" conditions for all combinations of High-Low waves, High-Low wind (offshore and onshore), and High-Low tide. Multiple daily deployments were scheduled during one randomly selected week, 2/15/14-2/23/14, coinciding with ADCP deployment to facilitate direct comparisons of Eulerian and Lagrangian flow measurements under various forcing conditions.")
+document.add_paragraph("Faga'alu Bay is a relatively small area (0.25km2) so very high density drifter data could be collected with a small number of drifters (n=5) and field personnel (n=1). Drifter designs typically involve the use of a suspended drogue (Johnson et al., 2003; Ouillon et al., 2010) or a finned tube (MacMahan et al., 2009) to extend into and anchor the drifter in the water column. However, due to the shallow conditions experienced on reef flats a novel drifter design was needed. Drifters for shallow coral reef environments need to be shallow enough to avoid interaction with corals, deep enough to not be affected by the surface movements, extend high enough to be visible but not high enough to be affected by winds, and finally, rugged enough to sustain the impact of a breaking wave onto the reef in the event it is entrained in the surf zone. Five drifters were designed and constructed with materials avaialable on-island, from PVC tubing and plastic sheeting, with a small waterproof housing for the GPS recorder (HOLUX M1000), and a float collar to maintain upright orientation (Figure "+Drifter_ADCP_pics['fig_num']+"). The fins of the drifters were roughly 300 mm wide and 180 mm in height, constructed of 13mm diameter PVC pipe and elbows, with holes drilled to flood the piping and compensate for the buoyancy of the pipe. The GPS logger was housed in a PVC housing comprised of an end cap, a short piece of 50 mm diameter pipe, a threaded female adapter and a threaded plug. A hole was drilled in the plug to accomodate a stainless steel hose clamp for attaching the logger housing to the fins, and the hole was plugged with epoxy. The drifters were transported to the launch zones and retrieved using a stand-up paddle board (SUP) which had advantages over motorized craft or kayaks due to the low cost, single man operation, and better visibility to track the drifters. Drifter velocities and trajectories are calculated using a forward-difference scheme on the drifter locations (Davis, 1991; MacMahan et al., 2010).")
 
-
+## Pics of drifters and ADCP
 if 'Drifter_ADCP_pics' in locals():
     document.add_picture(Drifter_ADCP_pics['filename'],width=Inches(6))
     add_figure_caption(Drifter_ADCP_pics['fig_num'],"TOP: Images of the shallow-water drifters on land, and deployed in the field. BOTTOM: Images of the acoustic current profilers deployed on the southern reef flat.")
 
 ## Eulerian measurements (ADCP's)
-document.add_heading('Eulerian measurements (ADCP)',level=4)      
-document.add_paragraph("Three Nortek Auqadopp 2-MHz acoustic current profilers recorded tide, wave and current data at three locations on the reef flat in Faga'alu for one week (Figure "+Study_Area_map['fig_num']+"). The profilers were attached to cinder blocks and placed on a sandy patch amongst the corals, as deep as possible to maintain adequate water levels over the profiler during low tide (Figure "+Drifter_ADCP_pics['fig_num']+"). The profilers collected 580 current samples at 2 Hz every 10 min and 2048 wave samples at 2Hz ever 60 min. On the northern reef, the water level dropped below the minimum blanking distance of the current profilers at low tides, and flow was assumed to be nearly zero during these times given the relatively low water depth relative to the height of the corals. Progressive vectors were calculated from the ADCP data by....")
-    
+document.add_heading('Eulerian measurements (ADCP)',level=3)      
+document.add_paragraph("Three Nortek Auqadopp 2-MHz acoustic current profilers recorded tide, wave and current data at three locations on the reef flat in Faga'alu for one week (Figure "+Study_Area_map['fig_num']+"). The profilers were attached to cinder block anchors and placed on sandy patches amongst the corals, as deep as possible to maintain adequate water levels over the profiler during low tide (Figure "+Drifter_ADCP_pics['fig_num']+"). The profilers collected 580 current samples at 2 Hz every 10 min and 2048 wave samples at 2Hz ever 60 min. On the northern reef, the water level dropped below the minimum blanking distance of the current profilers at low tides, and flow was assumed to be nearly zero during these times given the relatively low water depth relative to the height of the corals.")
 
 ## Analytical Methods
-document.add_heading('Analytical Methods',level=4)
-document.add_paragraph("")
-
+document.add_heading('Analytical Methods',level=3)
+document.add_paragraph("Two techniques were used to compare the drifter results with the profiler results: Empirical orthogonal functions (EOF) and progressive vectors of cumulative flow. Considering the speed and bearing of the drifter movement at each time step as an independent observation of the flow, the EOF's identify the dominant modes of flow in the spatial domain. EOF principal axes and variance ellipses were calculated for spatially binned drifter data (100 m x 100 m) and compared to the EOF's calculated from profiler data, for each of the three forcing conditions: Tides, Strong Winds, and Strong Waves. More circular variance ellipses indicate that flow directions are more variable while more ellipsoid variance ellipses indicate flow is dominantly in the direction of the major principal axis. Progressive vectors of the profiler data, which are cumulative summations of flow assuming spatial homogeneity, were compared to the drifter data. Drifter tracks were limited to 1 hr and compared with progressive vectors calculated from the profiler data for the corresponding time period.")
+document.add_paragraph("The mean velocity of drifters was calculated for each 100 m x 100 m spatial bin and used to compare flow patterns, and to calculate water residence time over the reef under different forcing conditions. Where drifters did not travel through a spatial bin, no residence time could be calculated.")
+    
 ## Forcing: Wave, Wind and Tide data
-document.add_heading('Forcing: Wave, Wind and Tide data',level=3)
-document.add_paragraph("A NIWA Dobie-A wave/tide gauge (DOBIE) was deployed on the southern reef slope at 10m depth, and recorded a 512s burst at 2Hz at the top of every hour. The DOBIE malfunctioned and recorded no data coinciding with the ADCP deployment, but showed good comparison with NOAA WaveWatchIII (WW3) modeled data on swell height and direction. Swell height and direction output from WW3 will be used to characterize wave forcing in further analyses (Hoeke et al., 2011).")
-
-document.add_paragraph("Meteorological data during the study were obtained from a Davis VantagePro weather station installed near the stream mouth, approximately 5m above sea level on a pole mounted to a building (WxStation, Figure 1). Wind speed, wind direction, barometric pressure, and precipitation were recorded at 15min. intervals at the weather station. Meteorological and tide data was also recorded at a NOAA NDBC station (NSTP6), 1.8km north, during the study. Wind speed, wind direction, barometric pressure, and water level were recorded at NSTP6 at 6min. intervals. For this study, wind conditions are sufficiently described by qualitatively so the topographic effects on wind speed and direction recorded at the stations are considered inconsequential (Storlazzi et al., 2004)")
-
-
+document.add_heading('End-member Forcing: Wave, Wind and Tide data',level=3)
+document.add_paragraph("Drifter deployments were conducted opportunistically to capture "+'"end-member"'+" conditions for all combinations of High-Low waves, High-Low wind (offshore and onshore), and High-Low tide (Presto et al., 2006). Multiple daily deployments were scheduled during one randomly selected week, 2/15/14-2/23/14, coinciding with ADCP deployment to facilitate direct comparisons of Eulerian and Lagrangian flow measurements under tide, wind and wave forcing conditions. End member conditions were defined post-deployment using modeled and in situ data on wave, wind, and tide conditions. End-member forcing conditions are somewhat qualitatively defined, based on available data, and assumed to describe the commonly occuring range of forcings experienced at the study site.") 
+## Wave data
+document.add_paragraph("Data on wave conditions was recorded by a NIWA Dobie-A wave/tide gauge (DOBIE) deployed on the southern reef slope at 10m depth (Figure "+Study_Area_map['fig_num']+"). The DOBIE sampled a 512s burst at 2Hz at the top of every hour. The DOBIE malfunctioned and recorded no data coinciding with the ADCP deployment, but showed good comparison with NOAA WaveWatchIII (WW3) modeled data on swell height and direction for the recorded data (Hoeke et al., 2011). Swell height and direction from NOAA's WW3 model, calibrated to wave data recorded in situ by the DOBIE wave/tide gauge, were used to define the end-member conditions.")
+## Wind data
+document.add_paragraph("Meteorological data during the study were obtained from a Davis VantagePro weather station installed near the stream mouth, approximately 5m above sea level on a pole mounted to a building (WxStation, Figure "+Study_Area_map['fig_num']+"). Wind speed, wind direction, barometric pressure, and precipitation were recorded at 15min. intervals at the weather station. Meteorological and tide data was also recorded at a NOAA NDBC station (NSTP6), 1.8km north. Wind speed, wind direction, barometric pressure, and water level were recorded at NSTP6 at 6min. intervals. For this study, wind conditions are sufficiently described qualitatively so the topographic effects on wind speed and direction recorded at the stations are considered inconsequential (Storlazzi et al., 2004)")
 
 #### RESULTS and DISCUSSION ####
 results_title = document.add_heading('Results and Discussion',level=2)
 ## Forcing: Wave, wind, tide during ADCP deployment
 document.add_heading('Forcing: Wave, wind, tide during ADCP deployment',level=3)
 
-document.add_paragraph("A fairly large range of wind and wave conditions and combinations was sampled during the ADCP deployment (February 15-23, 2014), including a high onshore wind event, a high SE groundswell event, and low to moderate winds from variable directions. The deployment period of the ADCP and intensive drifter deployments can be separated into three distinct time periods: 1) Low swell, High onshore wind (Day 47-49)="+'"WIND"'+", 2) Low swell, Low wind (Day 50-51)="+'"CALM"'+", and 3) High swell, Low wind (Day 52-Day 55)="+'"WAVE"'+" (Figure 3). Average wind speed reached a maximum of 9m/s (17knots) with maximum gusts of to 14m/s (28knots) from the NE-SE on February 17, 2014 (Day 48). Swell height during WAVE reached 1.3m (Day 52), which is near the annual maximum height expected for this location (Vetter, 2013).")
+### Forcing data
+if 'Forcing_data_timeseries' in locals():
+    document.add_picture(Forcing_data_timeseries['filename'],width=Inches(6))
+    add_figure_caption(Forcing_data_timeseries ['fig_num'],caption="Time series of physical forcing: Tide stage, wind speed, wind direction from NDBC station NSTP6, wave height and direction from NOAA WW3. Day 47=16 Feb 2014, Day 54=23 Feb 2014.")
+    
+document.add_paragraph("A large range of wind and wave conditions and combinations was sampled during the ADCP deployment (February 15-23, 2014), including a high onshore wind event, a high SE groundswell event, and low winds from variable directions where tidal forcing was dominant (Figure "+Forcing_data_timeseries ['fig_num']+"). The deployment period of the ADCP and intensive drifter deployments can be separated into three distinct time periods: 1) Low swell, High onshore wind (Day 47-49)="+'"WIND"'+", 2) Low swell, Low wind (Day 50-51)="+'"TIDE"'+", and 3) High swell, Low wind (Day 52-Day 55)="+'"WAVE"'+" (Table "+Endmember_table.table_num+"). Average wind speed reached a maximum of 9m/s (17knots) with maximum gusts of to 14m/s (28knots) from the NE-SE on February 17, 2014 (Day 48). Swell height during WAVE reached 1.3m (Day 52), which is near the annual maximum height expected for this location (Vetter, 2013).")
 
 ## Table: End member definitions
 if 'Endmember_table' in locals():
     dataframe_to_table(df=Endmember_table,table_num=Endmember_table.table_num,caption="End member periods",fontsize=9)
 document.add_paragraph("**Note: Local time is UTC-11 so local dates are actually one day earlier (e.g. Tide=2/18-2/19 Local time)")
 
-### Forcing data
-if 'Forcing_data_timeseries' in locals():
-    document.add_picture(Forcing_data_timeseries['filename'],width=Inches(6))
-    add_figure_caption(Forcing_data_timeseries ['fig_num'],caption="Forcing: Tide, wind speed, wind direction from NDBC station NSTP6, wave height and direction from NOAA WW3. Day 47=16 Feb 2014, Day 54=23 Feb 2014.")
-
 ## Eulerian Measurements (ADCP)    
 document.add_heading('Eulerian Measurements (Acoustic Doppler Current Profilers)',level=3)
-document.add_paragraph("Three Nortek Aquadopp ADCP were supplied by the USGS Pacific Water Science Center in Santa Cruz, CA, and deployed on the reef flat in Faga'alu for one week: February 15-23, 2014 (Figure 1). Flow speed and direction was recorded every 20 minutes at 1hz (not sure what the actual specs were, Curt programmed them). On the Northern reef the water level dropped below the minimum blanking distance of the ADCP at low tides, and flow is assumed to be nearly zero during these times given the relatively low water.")
+document.add_paragraph("Three Nortek Aquadopp ADCP were supplied by the USGS Pacific Water Science Center in Santa Cruz, CA, and deployed on the reef flat in Faga'alu for one week: February 15-23, 2014 (Figure "+Study_Area_map['fig_num']+"). On the Northern reef the water level dropped below the minimum blanking distance of the ADCP at low tides (Figure "+ADCP_measurements['fig_num']+"d), and flow is assumed to be nearly zero during these times given the relatively low water. The highest velocity flow was observed over the most southern part of the reef (AS1), in a dominant northwesterly direction for the entire deployment, indicating the strong influence of breaking waves over the reef crest. The portion of the reef crest adjacent AS1 receives the most wave energy in Faga'alu, and flow from the reef further to the south of AS1 at Fatumafuti receives swell from a large window of swell directions to the south and southwest. High velocity flows were also observed at AS2, though not as consisently as at AS1, and in a dominantly southwesterly direction, reflecting the relative orientation of the reef crest and shore. Whereas the flow at AS1 is deflected by the shore, turning the cross-reef flow of water north toward the deeper parts of the bay and main channel, the flow at AS2 is primarily shoreward into the deep pools in the middle of the reef flat and main channel. There is some refraction of swell energy around the northeast corner of the southern reef flat, causing waves to break on the southern crest of the main channel and deflecting water flowing from the east further west into the bay before it turns north into the main channel. Flow direction and velocities at AS1 were fairly consistent during all endmember conditions, whereas flow direction and velocities were more variable at AS2 and varied most strongly with higher wave conditions. As swell direction turns more easterly, more wave energy is incident upon the northern portion of the southern reef. Under tidal influence or offshore winds in the absence of strong waves there is potential for cross-reef flow directions, when the swell was larger the flow at AS2 was higher in velocity and more dominantly towards shore. Flow direction and velocity were most variable at AS3 on the northern reef, and while flow direction and velocity at AS1 and AS2 were mostly influenced by wave conditions, flow at AS3 did not show strong correlation with any of the endmember forcing conditions.")
 
 ## ADCP measurements
 if 'ADCP_measurements' in locals():
     document.add_picture(ADCP_measurements['filename'],width=Inches(6))
-    add_figure_caption(ADCP_measurements['fig_num'],caption="ADCP measurements.")    
-
+    add_figure_caption(ADCP_measurements['fig_num'],caption="Time series of the resulting flow measured by the acoustic current profilers. Water depths at low tide were too shallow to measure flow data at AS3. Note the variations in current speeds both in space and time due to the different forcing conditions.")    
 
 ## Lagrangian Measurements (GPS-logging Drifters)
 document.add_heading('Lagrangian Measurements (GPS-logging Drifters)',level=3)
-document.add_paragraph("")
-
-document.add_paragraph("Thirty drifter deployments were conducted, with twenty-two of those deployments coinciding with ADCP deployment (Table 1). Drifter velocities and trajectories are calculated using a forward-difference scheme on the drifter locations (Davis, 1991; MacMahan et al., 2010).")
-
+document.add_paragraph("Thirty drifter deployments were conducted from January to February, 2014, with twenty-two of those deployments coinciding with ADCP deployment, February 15-23, 2014 (Table "+Drifter_deployment_table.table_num+"). Five drifters were released from the same five launch zones  at the beginning of each deployment, and allowed to drift until they exited the main channel to Pago Pago Harbor (Figure "+Study_Area_map['fig_num']+"). Drifter position data was recorded by the HOLUX-M1000 GPS logger at 5 second intervals and resampled to 1 minute intervals to reduce signal noise. Drifters were allowed to drift until they exited the main channel but tracks were limited to 1 hr for analysis. Drifter speed and bearing were calculated using a forward difference scheme and gridded in 100 m x 100 m bins.")
 
 ## Table: Drifter deployments dates and conditions
 if 'Drifter_deployment_table' in locals():
     dataframe_to_table(df=Drifter_deployment_table,table_num=Drifter_deployment_table.table_num,caption="Drifter deployment dates and conditions. Red numbered Deployments coincide with ADCP deployment",fontsize=9)
+    
+document.add_paragraph("Three general spatial patterns were evident (Figure "+ALL_Drifter_tracks['fig_num']+"): 1) Faster onshore transport speeds (lower residence times) over the southern reef flat, 2) Slower, more variable currents (longer residence times) over the deeper inshore portion of the reef flat and inner portion of the embayment that converge on the inshore side of the main channel, and 3) Faster offshore transport speeds (lower residence times) over the offshore side of the main channel.")
+
+if 'ALL_Drifter_tracks' in locals():
+    document.add_picture(ALL_Drifter_tracks['filename'],width=Inches(6))
+    add_figure_caption(ALL_Drifter_tracks['fig_num'],caption="Map of all drifter tracks, colored by speed, recorded during the experiement.")
+
+
 document.add_paragraph("")
 
-document.add_paragraph("Five drifters were released from the same five launch zones (Figure 1) at the beginning of each of thirty deployments from January to February, 2014. Drifter position data was recorded by the HOLUX-M1000 GPS logger at 5 second intervals and resampled to 1 minute intervals to reduce signal noise. Drifter speed and bearing were calculated from point to point and gridded by ")
+
 
 ## Comparing Eulerian and Lagrangian Measurements
 document.add_heading('Comparing Eulerian and Lagrangian Measurements',level=3)
 
-# Specific flow patterns under Wind, Wave, and Calm Conditions
-document.add_heading('Specific flow patterns under Wind, Wave, and Calm Conditions',level=4)
-document.add_paragraph("Data were categorized into wind, wave, and calm "+'"end-member"'+" conditions (Presto et al., 2006)")
+# Progressive Vectors
+document.add_heading('Progressive Vectors',level=4)
+document.add_paragraph("A series of 1 h progressive vector diagrams of projected cumulative flow were computed from ADCP data (Storlazzi et al, 2006). Progressive vectors are calculated assuming spatial homogeneity of the flow, causing them move onshore in some instances. The progressive vectors from ADCP data mainly illustrate how variable the flow velocity is at a fixed point. The progressive vectors for AS1 and AS2 show little variation in flow direction, indicating the flow velocity is consistent. The progressive vecotrs for AS3 are much more erratic, and travel relatively shorter distances due to the lower velocities observed over the northern reef.")
+
+document.add_paragraph("The drifter tracks, compared to the progressive vectors, show the spatial heterogeneity of the flow pattern as the water flows over the reef flat, turns parallel to shore and into the deep channel. Under tidal forcing the drifter tracks over the northern reef are highly erratic, though though travel longer distances than under strong onshore winds. This indicates that under tidal forcing water movement is variable over the reef but strong winds push water into the northwest corner of the embayment, piling up water over the northern reef and increasing residence time. Drifter tracks crossing the reef crest are observed over the southern reef under tidal forcing, in the absence of breaking waves that would strongly force water flow across the reef, preventing seaward flow. Under strong wave conditions, a more coherent, clockwise flow pattern is observed over both the northern and southern reef as large breaking waves force large amounts of water onto the reef flat, driving flow quickly across the southern reef flat and into the main channel. Despite waves breaking on the eastern reef crest of the northern reef, it appears the flow across the southern reef and into the main channel influences an overall eastward flow over the northern reef and out the main channel.")
 
 if 'Progressive_Vectors_ADCP_vs_Drifters' in locals():
     document.add_picture(Progressive_Vectors_ADCP_vs_Drifters['filename'],width=Inches(6))
     add_figure_caption(Progressive_Vectors_ADCP_vs_Drifters['fig_num'],caption="Progressive vectors from ADCP compared to actual Drifter tracks") 
 
-document.add_heading('Mean flow speed and direction in 100m gridded cells under Wind, Wave, Calm conditions',level=4)
-document.add_paragraph("Arrows with speed=size (Presto et al., 2006); Drifter data are binned by location (10m x 10m bins) and averaged over the deployment duration (~1 hr) to obtain a synoptic view of the flow pattern (MacMahan et al., 2010).; Similar bay in Guam showed max speed in channel of 0.05m/s (Wolanski et al., 2003);  Current speeds, waves, and setup higher during higher tide stages (Storlazzi et al., 2004)")
-
-## Gridded velocity by endmembers
-if 'Gridded_Velocity_endmembers' in locals():
-    document.add_picture(Gridded_Velocity_endmembers['filename'],width=Inches(6))
-    add_figure_caption(Gridded_Velocity_endmembers['fig_num'],caption="Drifter tracks and gridded mean velocity.") 
-
+# EOF's
 ## PCA Plots of all drifter data, in 100m bins, color ellipses by number of observations
 document.add_heading('PCA Plots of all drifter data, in 100m bins, color ellipses by number of observations',level=4)
+
+document.add_paragraph("")
 
 ## Gridded PCA by endmembers
 if 'PCA_gridded' in locals():
     document.add_picture(PCA_gridded['filename'],width=Inches(6))
     add_figure_caption(PCA_gridded['fig_num'],caption="Gridded PCA compared to ADCP")    
+
+## Gridded velocity by endmembers
+document.add_heading('Mean flow speed and direction in 100m gridded cells under Wind, Wave, Calm conditions',level=4)
+document.add_paragraph("Arrows with speed=size (Presto et al., 2006); Drifter data are binned by location (10m x 10m bins) and averaged over the deployment duration (~1 hr) to obtain a synoptic view of the flow pattern (MacMahan et al., 2010).; Similar bay in Guam showed max speed in channel of 0.05m/s (Wolanski et al., 2003);  Current speeds, waves, and setup higher during higher tide stages (Storlazzi et al., 2004)")
+
+if 'Gridded_Velocity_endmembers' in locals():
+    document.add_picture(Gridded_Velocity_endmembers['filename'],width=Inches(6))
+    add_figure_caption(Gridded_Velocity_endmembers['fig_num'],caption="Drifter tracks and gridded mean velocity.") 
+
+## Residence Times for 100m bin grid
+document.add_heading('Residence Times from drifter observations', level=4)
+
+if 'Gridded_ResidenceTime_endmembers' in locals():
+    document.add_picture(Gridded_ResidenceTime_endmembers['filename'],width=Inches(6))
+    add_figure_caption(Gridded_ResidenceTime_endmembers['fig_num'],caption="Residence time calculated from mean velocity of drifters under endmember conditions")    
+
 
 
 document.add_paragraph("")
@@ -346,7 +369,7 @@ document.add_paragraph("")
 
 #### CONCLUSION
 conclusion_title=document.add_heading('Conclusion',level=2)
-conclusion_text = document.add_paragraph("In conclusion...")
+conclusion_text = document.add_paragraph("The bay-wide mean current speeds (residence times) varied from 1-37 cm/s (2.78-0.08 hr), 1-36 cm/s (2.78-0.08 hr), and 5-64 cm/s (0.56-0.04 hr) under tidal, wind, and wave forcing, respectively. The shortest residence times were measured on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the embayment. These circulation patterns cause the spatial pattern of suspended sediment plumes observed in timelapse imagery. The spatial flow pattern and longer residence times result in greater exposure (=intensity x duration) of the corals in these areas to sediment stress and likely causes the reduced coral health in these locations. ")
 
 #### Appendix
 document.add_page_break()
