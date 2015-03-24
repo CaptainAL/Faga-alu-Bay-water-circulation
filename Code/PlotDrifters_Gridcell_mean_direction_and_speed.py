@@ -149,7 +149,7 @@ sc=plot_mean_grid_velocity(Map,AllGridValues)
 #plt.suptitle('End member condition: '+by_dep)
 
 #plt.savefig(figdir+'Velocity gridded/'+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
-plt.savefig(figdir+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
+#plt.savefig(figdir+'drifters gridded mean velocity-'+by_dep+'.png',transparent=True)
 
 
 
