@@ -45,15 +45,19 @@ elif git!=True: ## Local folders
 
 ##  Create Document
 document = Document()
+tables_and_figures = Document()
 
 ######## SOME TOOLS
+figure_captions = []
 def add_figure_caption(fig_num=str(len(document.inline_shapes)),caption=''):
-    cap = document.add_paragraph("Figure "+fig_num+". "+caption)
+    cap = tables_and_figures.add_paragraph("Figure "+fig_num+". "+caption)
     cap.paragraph_style = 'caption'
+    figure_captions.append("Figure "+fig_num+". "+caption)
     return
-    
+
+table_titles = []
 def dataframe_to_table(df=pd.DataFrame(),table_num=str(len(document.tables)+1),caption='',fontsize=11):
-    table = document.add_table(rows=1, cols=len(df.columns)) 
+    table = tables_and_figures.add_table(rows=1, cols=len(df.columns)) 
     ## Merge all cells in top row and add caption text
     table_caption = table.rows[0].cells[0].merge(table.rows[0].cells[len(df.columns)-1])
     table_caption.text = "Table "+table_num+". "+caption
@@ -78,6 +82,7 @@ def dataframe_to_table(df=pd.DataFrame(),table_num=str(len(document.tables)+1),c
     table.style.font.size = Pt(fontsize)
     table.autofit
     #table.num = str(len(document.tables)+1)
+    table_titles.append("Table "+table_num+". "+caption)
     return table
     
 def add_equation(eq_table):
@@ -92,8 +97,7 @@ def add_equation(eq_table):
 ###################################################################################################################################################################    
 
 
-#### TABLES ########################################################################################################################################################
-### Landcover_Table
+#### TABLES ###########################################################################################################################
 table_count=0
 def tab_count():
     global table_count
@@ -194,15 +198,21 @@ title_title = document.add_heading('TITLE:',level=1)
 title_title.paragraph_format.space_before = 0
 title = document.add_heading("Eulerian and Lagrangian measurements of flow and residence time on a fringing reef flat embayment, American Samoa",level=1)
 title.paragraph_format.space_before = 0
-## subscript/superscript words
-document.add_paragraph("")
+## Authors
+document.add_heading('Authors:',level=3)
+document.add_paragraph("Messina, A.M.a*, Storlazzi, C.D.b, Cheriton, O.M.b, Biggs, T.W.a")
+document.add_paragraph("a San Diego State University, Department of Geography, San Diego, CA 92182, amessina@rohan.sdsu.edu, +1-619-594-5437, tbiggs@mail.sdsu.edu, +1-619-594-0902")
+document.add_paragraph("b US Geological Survey, Pacific Coastal and Marine Science Center, Santa Cruz, CA 95060, cstorlazzi@usgs.gov, +1-831-460-7521, ocheriton@usgs.gov, +1-831-460-7579")
 
+document.add_paragraph("scripted terms: a, b, km2")
 #### ABSTRACT
 abstract_title = document.add_heading('ABSTRACT',level=2)
 abstract_title.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 abstract = document.add_paragraph("Hydrodynamic processes on coral reefs are important for nutrient cycling, larval dispersal, temperature variability, and understanding the impacts on coral reef ecosystems from terrestrial sediment, nutrients, and contaminants from adjacent impaired watersheds. In order to understand the spatial and temporal variability in flow velocities and the resulting residence time of water in the fringing coral reef flat-lined embayment of Faga'alu, on the island of Tutuila in American Samoa, data from three bottom-mounted acoustic current profilers and 102 (4-5 drifters x 21 deployments) individual Lagrangian ocean surface current drifter deployments were combined with meteorologic data and numerical wave model results. These data and model results, collected over nine days, made it possible to evaluate the relative contribution of tidal, wind, and wave forcing on the flow patterns. The high number of drifter deployments made it possible for the velocity data to be binned into 100 m x 100 m grid cells and the resulting residence times computed for the different sets of forcing conditions. Cumulative progressive vectors calculated from the acoustic current profilers closely matched the tracks from concurrently-deployed surface current drifters, showing the applicability of this hybrid Lagrangian-Eulerian measurement scheme to understand flow patterns in this geomorphically-complex embayment. Mean current speeds (residence times) varied from 1-37 cm/s (2.8-0.1 hr), 1-36 cm/s (2.8-0.1 hr), and 5-64 cm/s (0.6-0.04 hr) under tidal, wind, and wave forcing, respectively; the highest speeds (lowest residence times) were measured on the outer reef flat closest to where waves were breaking on the reef crest and were slowest (longest) over the inner reef flat close to shore and deep in the embayment. ")
 
-document.add_paragraph("scripted terms: km2")
+## Authors
+document.add_heading('Keywords:',level=3)
+document.add_paragraph("Coral reefs, Drifters, Acoustic backscatter, Water circulation, Residence time")
 
 #### INTRODUCTION
 introduction_title = document.add_heading('Introduction',level=2)
@@ -217,21 +227,20 @@ document.add_paragraph("Little data on current circulation around Tutuila is ava
 
 #### STUDY AREA
 study_area_title = document.add_heading('Study Area',level=2)
-
 document.add_paragraph("Faga'alu Bay, on the island of Tutuila, American Samoa (14.290 S, 170.677 W) is a V-shaped, reef-fringed embayment at the mouth of a small, steep-sided watershed (2.48 km2)(Figure "+Study_Area_map['fig_num']+"). An anthropogenically altered, vertical-walled, 10-20m deep paleo-stream channel extends from the mouth of Faga'alu Stream eastward to Pago Pago Bay. This deep channel ('ava in Samoan language) divides the reef into a larger southern and a smaller northern section.")
 
 ## Study Area map
 if 'Study_Area_map' in locals():
-    document.add_picture(Study_Area_map['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Study_Area_map['filename'],width=Inches(6))
     add_figure_caption(Study_Area_map['fig_num'],"Data collection locations in Faga'alu Bay. Wind speed and direction was recorded at the weather station (WxStation), a Dobie wave gauge recorded wave height and period (Wave Gauge), three ADCP's were deployed for one week to measure current speed and direction, and five GPS-logging drifters were deployed from the same five launch zones (DrifterLaunch) for thirty separate deployments (January to March, 2014). ")
     
 document.add_paragraph("Faga'alu Bay is situated on the western side of Pago Pago Harbor where the surrounding high topography blocks wet-season northerly winds (October-April), but the bay is exposed to dry-season southeasterly tradewinds and accompanying short-period wind waves (May-September). Faga'alu is only open to a narrow window of swell directions (S-SE) and swells approaching from a southerly angle must refract to the west to break directly on the reef, reducing the energy of breaking waves. Offshore significant wave heights (Hs) from southerly and southeasterly directions are generally less than 2.5m and rarely exceed 3m. Wave periods (Tp) are generally about 9 sec or less, rarely exceed 13 sec but occasionally reach 25 sec during austral winter storms (Thompson and Demirbilek, 2002). Vetter (2013) recorded peak significant wave heights on the forereef in Faga'alu up to 1.7m but wave heights greater than 1m were rare. Wave-breaking is constrained to the shallow reef crests, the transitions between the steeply-sloping fore reef and the roughly horizontal reef flats. A microtidal regime (~0-1m) varies semi-diurnally, exposing parts of the shallow reef crest and reef flat at extreme low tides (<0m MSL). Given that the reef crest is exposed at low tide, cross-reef transfer of wave energy and water flow is strongly dependent on the tidal stage and wave setup.")
 
 if 'Bay_clear' in locals():
-    document.add_picture(Bay_clear['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Bay_clear['filename'],width=Inches(6))
     add_figure_caption(Bay_clear['fig_num']," Image of the embayment on a typical, rain-free day. The darker areas of the bay are live coral, and the light areas are deeper pools with carbonate sand bottom.")  
 if 'Bay_sedplume' in locals():
-    document.add_picture(Bay_sedplume['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Bay_sedplume['filename'],width=Inches(6))
     add_figure_caption(Bay_sedplume['fig_num'],"Image of a flood plume (2/21/14) in the northern portion of the bay following a heavy precipitation event. Plumes usually persist for several hours, and rarely are seen after 24h due to the flushing of water through the deep channel and out to sea.")    
     
 #### METHODS
@@ -254,7 +263,7 @@ document.add_paragraph("Five drifters were designed and constructed with materia
 
 ## Pics of drifters and ADCP
 if 'Drifter_ADCP_pics' in locals():
-    document.add_picture(Drifter_ADCP_pics['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Drifter_ADCP_pics['filename'],width=Inches(6))
     add_figure_caption(Drifter_ADCP_pics['fig_num'],"TOP: Images of the shallow-water drifters on land, and deployed in the field. BOTTOM: Images of the acoustic current profilers deployed on the southern reef flat (AS1).")
 
 ## Eulerian measurements (ADCP's)
@@ -275,13 +284,13 @@ document.add_paragraph("Data on wave conditions was recorded by a NIWA Dobie-A w
 document.add_paragraph("Wind speed, wind direction, barometric pressure, and precipitation were recorded at 15min. intervals during the study, using a Davis VantagePro weather station installed near the stream mouth, approximately 5m above sea level on a pole mounted to a building (WxStation, Figure "+Study_Area_map['fig_num']+"). Meteorological and tide data was also recorded at a NOAA NDBC station (NSTP6), 1.8km north. Wind speed, wind direction, barometric pressure, and tidal elevation were recorded at NSTP6 at 6min. intervals. For this study, wind conditions are sufficiently described qualitatively so the topographic effects on wind speed and direction recorded at the stations are considered inconsequential (Storlazzi et al., 2004)")
 
 #### RESULTS and DISCUSSION ####
-results_title = document.add_heading('Results and Discussion',level=2)
+results_title = document.add_heading('Results',level=2)
 ## Forcing: Wave, wind, tide during ADCP deployment
 document.add_heading('Forcing: Wave, wind, tide during ADCP deployment',level=3)
 
 ### Forcing data
 if 'Forcing_data_timeseries' in locals():
-    document.add_picture(Forcing_data_timeseries['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Forcing_data_timeseries['filename'],width=Inches(6))
     add_figure_caption(Forcing_data_timeseries ['fig_num'],caption="Time series of physical forcing: Tide stage, wind speed, wind direction from NDBC station NSTP6, wave height and direction from NOAA WW3. Day 47=16 Feb 2014, Day 54=23 Feb 2014.")
     
 document.add_paragraph("A large range of wind and wave conditions and combinations was sampled during the ADCP deployment (February 15-23, 2014), including a high onshore wind event, a high SE groundswell event, and low winds from variable directions where tidal forcing was dominant (Figure "+Forcing_data_timeseries ['fig_num']+"). The deployment period of the ADCP and intensive drifter deployments can be separated into three distinct time periods: 1) Low swell, High onshore wind (Day 47-49)="+'"WIND"'+", 2) Low swell, Low wind (Day 50-51)="+'"TIDE"'+", and 3) High swell, Low wind (Day 52-Day 55)="+'"WAVE"'+" (Table "+Endmember_table.table_num+"). Average wind speed reached a maximum of 9m/s (17knots) with maximum gusts of to 14m/s (28knots) from the NE-SE on February 17, 2014 (Day 48). Swell height during WAVE reached 1.3m (Day 52), which is near the annual maximum height expected for this location (Vetter, 2013).")
@@ -297,7 +306,7 @@ document.add_paragraph("Three Nortek Aquadopp ADCP were supplied by the USGS Pac
 
 ## ADCP measurements
 if 'ADCP_measurements' in locals():
-    document.add_picture(ADCP_measurements['filename'],width=Inches(6))
+    tables_and_figures.add_picture(ADCP_measurements['filename'],width=Inches(6))
     add_figure_caption(ADCP_measurements['fig_num'],caption="Time series of the resulting flow measured by the acoustic current profilers. Water depths at low tide were too shallow to measure flow data at AS3. Note the variations in current speeds both in space and time due to the different forcing conditions.")    
     
 document.add_paragraph("The highest velocity flow was observed over the most southern part of the reef (AS1), in a dominant northwesterly direction for the entire deployment, indicating the strong influence of even small  breaking waves over the reef crest. The portion of the reef crest adjacent AS1 receives the most wave energy in Faga'alu, and flow from the reef further to the south of AS1 (at Fatumafuti) is open to an even wider window of swell directions to the south and southwest. High velocity flows were also observed at AS2, though not as consisently as at AS1, and in a dominantly southwesterly direction, reflecting the relative orientation of the reef crest and shore. Whereas the flow at AS1 is deflected by the shore, turning the cross-reef flow of water north toward the deeper parts of the bay and main channel, the flow at AS2 is primarily shoreward into the deep pools in the middle of the reef flat before turning into the main channel. It would seem that flow over the southern reef would flow directly into the main channel, however this flow is deflected away from the main channel, shoreward. This deflection is caused by wave energy refracting and surging into the main channel, pushing southward from the main channel onto the soouthern reef. Flow data at AS1 also illustrate the modulating effect of tidal stage on flow speed similar to Storlazzi et al., (2004). During Days 52 to 55 a decrease in flow speed is observed coinciding with the low tide. As the tide level decreases, less wave energy propagates over the reef crest and friction and turbulence over the reef increases. This effect is still observed, but is smaller in magnitude at AS2 because the water depth is higher and the coral elevation is lower at AS2.")
@@ -315,7 +324,7 @@ if 'Drifter_deployment_table' in locals():
 document.add_paragraph("Three general spatial patterns were evident (Figure "+ALL_Drifter_tracks['fig_num']+"): 1) Faster onshore transport speeds (lower residence times) over the southern reef flat, 2) Slower, more variable currents (longer residence times) over the deeper inshore portion of the reef flat and inner portion of the embayment that converge on the inshore side of the main channel, and 3) Faster offshore transport speeds (lower residence times) over the offshore side of the main channel. Only a few drifters traveled seaward across the reef crest, mainly exiting through a subtle depression in the southern reef crest, and these only occurred at high tide under calm wave and wind conditions. Other anomalous drifter tracks show where drifters were entrained in the surf zone at the reef crest and quuickly exited back out to sea (far northeast in the study area).")
 
 if 'ALL_Drifter_tracks' in locals():
-    document.add_picture(ALL_Drifter_tracks['filename'],width=Inches(6))
+    tables_and_figures.add_picture(ALL_Drifter_tracks['filename'],width=Inches(6))
     add_figure_caption(ALL_Drifter_tracks['fig_num'],caption="Map of all drifter tracks, colored by speed, recorded during the experiment.")
     
 document.add_paragraph("")
@@ -330,7 +339,7 @@ document.add_paragraph("A series of 1 h progressive vector diagrams of projected
 document.add_paragraph("The drifter tracks, compared to the progressive vectors, show the spatial heterogeneity of the flow pattern as the water flows over the reef flat, turns parallel to shore and into the deep channel (Figure "+Progressive_Vectors_ADCP_vs_Drifters['fig_num']+"). Under tidal forcing the drifter tracks over the northern reef are highly erratic, but travel longer distances than under strong onshore winds (Figure "+Progressive_Vectors_ADCP_vs_Drifters['fig_num']+"b). This indicates that under tidal forcing water movement is variable over the reef but strong winds push water into the northwest corner of the embayment, piling up water over the northern reef and increasing residence time. Drifter tracks crossing the reef crest are observed over the southern reef under tidal forcing, in the absence of breaking waves that would strongly force water flow across the reef, preventing seaward flow. Under strong wave conditions (Figure "+Progressive_Vectors_ADCP_vs_Drifters['fig_num']+"e), a more coherent, clockwise flow pattern is observed over both the northern and southern reef as large breaking waves force large amounts of water onto the reef flat, driving flow quickly across the southern reef flat and into the main channel. Despite waves breaking on the the northern reef crest, it appears the flow across the southern reef and into the main channel influences an overall eastward flow over the northern reef and out the main channel (Figure "+Progressive_Vectors_ADCP_vs_Drifters['fig_num']+"e).")
 
 if 'Progressive_Vectors_ADCP_vs_Drifters' in locals():
-    document.add_picture(Progressive_Vectors_ADCP_vs_Drifters['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Progressive_Vectors_ADCP_vs_Drifters['filename'],width=Inches(6))
     add_figure_caption(Progressive_Vectors_ADCP_vs_Drifters['fig_num'],caption="Progressive vectors calculated from ADCP data, compared to actual Lagrangian drifter tracks under different forcing conditions. ") 
 
 # EOF's
@@ -341,7 +350,7 @@ document.add_paragraph("EOF's and mean flow velocity were calculated from ADCP d
 
 ## Gridded EOF by endmembers
 if 'PCA_gridded' in locals():
-    document.add_picture(PCA_gridded['filename'],width=Inches(6))
+    tables_and_figures.add_picture(PCA_gridded['filename'],width=Inches(6))
     add_figure_caption(PCA_gridded['fig_num'],caption="EOF's calculated from ADCP data, compared to EOF's calculated from spatially binned (100m x 100m grid cell) Lagrangian drifter data under different forcing conditions. Drifter EOF's are colored by number of observations to illustrate varying data density depending on grid cell.")    
 
 document.add_paragraph("Drifter data was spatially binned and EOF's and mean flow velocity were calculated for each 100m x 100m grid cell (Figure "+PCA_gridded['fig_num']+"). Due to their spatial position relative to the flow pattern, some grid cells had a much higher number of observations, especially those grid cells in the middle parts of the bay. More observations suggests more certainty in observed patterns, while some of the outlying grid cells with a small number of observations may have been influenced by an anomalous drifter track. However, the overall pattern of drifter tracks is similar to the results from corresponding Eulerian results: Flow over the southern reef is driven by cross-shore wave-driven transport which flows northward to the main channel. However, while it may be hypothesized that water flows into the main channel and out to sea, the Eulerian data from the ADCPs' suggests all flow is into the bay. Finer resolution drifter data resolves the general counterclockwise flow from the southern reef, over the northern reef and out to sea. The drifter data also illustrates the decreased flow velocity near shore and in the deeper pools on the reef flat. The drifter data also illustrate the increase in flow velocity moving seaward in the main channel. Under both wave and tide forcing, the velocity steadily increases in the main channel, reaching a maximum at the reef crest. The same pattern is not evident under wind forcing, possibly due to wind driven flow being forced into the bay at the surface, but the data density is too low to be sure. Hench (2008) vertically binned ADCP data in Moorea showed that under low wave forcing surface currents were lower in the reef pass, and could reverse near the bottom. The increase in flow is either caused by the increasing volume of water contributed by the reef flats on either side or a narrowing of the channel cross-section. Either way the increase is notable for it's implications for placing a Eulerian ADCP at a fixed point in the channel, and using data from that one point to define flow for the whole bay.")
@@ -352,7 +361,7 @@ document.add_heading('Mean flow speed and direction in 100m gridded cells under 
 document.add_paragraph("Drifter data was spatially binned and mean flow velocity was calculated for all drifter tracks under each forcing condition (Figure "+Gridded_Velocity_endmembers['fig_num']+"). Over the whole bay, mean flow velocity varied from 1-37 cm/s, 1-36 cm/s, and 5-64 cm/s under tidal, wind, and wave forcing, respectively. Vetter (2013) observed flow speed in the main channel of 1-60 cm/s, with a mean of 14 cm/s. Drifter observations in the gridcell corresponding to Vetter's (2013) ADCP location showed flow speeds of 1-30 cm/s wtih a mean of 8 cm/s, for all forcing conditions. Vetter's (2013) ADCP time series shows lower flow speeds in the channel Jan-April than duriung the more active tradewind season June-October so it is likely that the drifter deployments included more quiescent distribution of days than occur during the whole year. While one large swell event was sampled during the drifter deployments, these conditions appear to be more common during the year than were observed during the one intensive week of drifter deployments. Also, Vetter's (2013) ADCP data ampled the full depth of the water column, as opposed to just the surface current that could be affected by winds, especially when strong east winds blow into the bay. This suggests that perhaps Eulerian and Lagrangian methods are more comparable in shallow depths, where the drifter is influenced by a relatively larger portion of the water column.")
 
 if 'Gridded_Velocity_endmembers' in locals():
-    document.add_picture(Gridded_Velocity_endmembers['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Gridded_Velocity_endmembers['filename'],width=Inches(6))
     add_figure_caption(Gridded_Velocity_endmembers['fig_num'],caption="Drifter tracks and calculated mean velocity, colored by speed for different forcing conditions. Cells with no drifter observations are left empty.") 
 
 document.add_paragraph("The overrall pattern of mean flow speeds and flow directions shows a strong clockwise circulation through the bay with higher flow speeds during wave forcing conditions, compared with tidal and wind forcing. The west-northwest flow directions over the southern reef remain nearly constant under all forcing conditions, but the flow speeds are highest under wave forcing and lowest under tidal forcing. Over the northern reef, however, mean flow directions are more variable, reversing and flowing towards the river mouth under strong onshore winds and tidal forcing. The drifter tracks for wind and wave forcing show nearly stationary drifter tracks over the northern reef, and only make alot of progress once they are entrained in the seaward flow of the main channel. ")
@@ -367,13 +376,34 @@ document.add_heading('Residence Times from drifter observations', level=4)
 document.add_paragraph("Residence times for 100m x 100m grid cells were computed from the mean flow speeds calculated from drifter data under different forcing conditions (Figure "+Gridded_ResidenceTime_endmembers['fig_num']+"). Residence times varied from 2.78-0.08 hr, 2.78-0.08 hr, and 0.56-0.04 hr under tidal, wind, and wave forcing, respectively. The shortest residence times were measured on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the embayment.")
 
 if 'Gridded_ResidenceTime_endmembers' in locals():
-    document.add_picture(Gridded_ResidenceTime_endmembers['filename'],width=Inches(6))
+    tables_and_figures.add_picture(Gridded_ResidenceTime_endmembers['filename'],width=Inches(6))
     add_figure_caption(Gridded_ResidenceTime_endmembers['fig_num'],caption="Residence time calculated from mean velocity of drifters under endmember conditions")    
+    
+#### DISCUSSION
+document.add_heading('Discussion',level=2)
 
 #### CONCLUSION
 conclusion_title=document.add_heading('Conclusion',level=2)
 conclusion_text = document.add_paragraph("The bay-wide mean current speeds (residence times) varied from 1-37 cm/s (2.78-0.08 hr), 1-36 cm/s (2.78-0.08 hr), and 5-64 cm/s (0.56-0.04 hr) under tidal, wind, and wave forcing, respectively. The shortest residence times were measured on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the embayment. These circulation patterns cause the spatial pattern of suspended sediment plumes observed in timelapse imagery. The spatial flow pattern and longer residence times result in greater exposure (=intensity x duration) of the corals in these areas to sediment stress and likely causes the reduced coral health in these locations. ")
 
+#### Acknowledgements
+document.add_heading('Acknowledgements',level=2)
+document.add_paragraph("This work was carried out in collaboration between San Diego State University and the US Geological Survey's Coral Reef Project. Funding was provided by a grant by the NOAA Coral Reef Conservation Program. A significant contribution of equipment and expertise was provided by the USGS Pacific Coastal and Marine Science Center. We would like to thank Dr. Michael Favazza for providing logistical support in the field.")
+
+#### References
+document.add_page_break()
+document.add_heading('References')
+document.add_paragraph('Add at the end, using Mendeley refs')
+
+#### Table Titles
+document.add_heading('Table Titles',level=2)
+for title in table_titles:
+    document.add_paragraph(title)
+#### Figure Captions
+document.add_heading('Figure Captions',level=2)
+for caption in figure_captions:
+    document.add_paragraph(caption)
+    
 #### Appendix
 document.add_page_break()
 document.add_heading('APPENDIX',level=2)
@@ -381,6 +411,7 @@ document.add_heading('APPENDIX',level=2)
 
 ## Save Document
 document.save(maindir+'Manuscript/DRAFT-Fagaalu_water_circulation.docx')
+tables_and_figures.save(maindir+'Manuscript/DRAFT-Fagaalu_water_circulation_tables_and_figures.docx')
 
 ## Clean up any open figures
 plt.close('all')
