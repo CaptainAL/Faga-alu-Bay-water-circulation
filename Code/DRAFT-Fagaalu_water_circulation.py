@@ -109,7 +109,7 @@ def Endmember_definitions_table():
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
     endmember_table = XL.parse('EndmemberDefn',header=0,index_col=0,parse_cols='A:D',parse_dates=False)
     endmember_table['End member']=endmember_table.index
-    endmember_table = endmember_table[['End member','Julian Day', 'Gregorian Day (UTC)','Gregorian Day (Local)']]
+    endmember_table = endmember_table[['End member','Year Day 2014', 'Gregorian Day (UTC)','Gregorian Day (Local)']]
     return endmember_table  
 Endmember_table = Endmember_definitions_table()
 Endmember_table.table_num = str(tab_count())    
@@ -124,9 +124,9 @@ def Drifter_deployments_table():
     deployment_table['Tide End'] = deployment_table['Tide End'].round(1)
     deployment_table['Tide movement'] = deployment_table['Tide movement'].round(1)
     deployment_table['Wind Speed Avg'] = deployment_table['Wind Speed Avg'].round(1)
-    deployment_table['Wind Direction Avg'] = deployment_table['Wind Direction Avg'].round(0)
+    deployment_table['Wind Direction Avg'] = deployment_table['Wind Direction Avg'].apply(int)
     deployment_table['Wind Gust Max'] = deployment_table['Wind Gust Max'].round(0)
-    deployment_table= deployment_table[['Deployment','Julian(local)', 'Date', 'Start Time', 'End Time', 'Tide Start', 'Tide End', 'Tide movement', 'Tide', 'Wind Speed Avg', 'Wind Direction Avg', 'Wind Gust Max', 'Wave Height(m)', 'Wave Period']]
+    deployment_table= deployment_table[['Deployment','Year Day 2014 (local)','Start Time','End Time','Tide Start','Tide End','Tide movement','Wind Speed Avg','Wind Gust Max','Wind Direction Avg','Wave Height(m)']]
     return deployment_table
 Drifter_deployment_table = Drifter_deployments_table()
 Drifter_deployment_table.table_num = str(tab_count())    
@@ -144,7 +144,7 @@ def fig_count():
 Study_Area_map = {'filename':maindir+'Figures/Maps/Fagaalu_water_circulation_study_area.tif', 'fig_num':str(fig_count())}
 
 ### Pics of Bay
-Bay_clear = {'filename':maindir+'Figures/Maps/Bay_clear.jpg', 'fig_num':str(fig_count())}
+Bay_clear = {'filename':maindir+'Figures/Maps/Bay_clear.jpg', 'fig_num':''}
 Bay_sedplume = {'filename':maindir+'Figures/Maps/Bay_sedplume.jpg', 'fig_num':str(fig_count())}
 
 ### Pics of Drifters and ADCP's
@@ -165,8 +165,8 @@ Progressive_Vectors_ADCP_vs_Drifters = {'filename':maindir+'Figures/Progressive 
 ## Gridded PCA by endmember
 PCA_gridded = {'filename':maindir+'Figures/Gridded PCA endmembers/Figure7_paxes_map_OMC.png', 'fig_num':str(fig_count())}
 
-### Gridded velocity by endmember
-Gridded_Velocity_endmembers = {'filename':maindir+'Figures/Gridded velocity endmembers/Fagaalu_velocity-endmembers.png', 'fig_num':str(fig_count())}
+#### Gridded velocity by endmember
+#Gridded_Velocity_endmembers = {'filename':maindir+'Figures/Gridded velocity endmembers/Fagaalu_velocity-endmembers.png', 'fig_num':str(fig_count())}
 
 ### Gridded residence time by endmember
 Gridded_ResidenceTime_endmembers = {'filename':maindir+'Figures/Residence Times/Fagaalu_gridded_residence_time.png','fig_num':str(fig_count())}
@@ -210,7 +210,7 @@ abstract_title = document.add_heading('ABSTRACT',level=2)
 abstract_title.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
 abstract = document.add_paragraph("Hydrodynamic processes on coral reefs are important for nutrient cycling, larval dispersal, temperature variability, and understanding the impacts on coral reef ecosystems from terrestrial sediment, nutrients, and contaminants from adjacent impaired watersheds. In order to understand the spatial and temporal variability in flow velocities and the resulting residence time of water in the fringing coral reef flat-lined embayment of Faga'alu, on the island of Tutuila in American Samoa, data from three bottom-mounted acoustic current profilers and 102 (4-5 drifters x 21 deployments) individual Lagrangian ocean surface current drifter deployments were combined with meteorologic data and numerical wave model results. These data and model results, collected over nine days, made it possible to evaluate the relative contribution of tidal, wind, and wave forcing on the flow patterns. The high number of drifter deployments made it possible for the velocity data to be binned into 100 m x 100 m grid cells and the resulting residence times computed for the different sets of forcing conditions. Cumulative progressive vectors calculated from the acoustic current profilers closely matched the tracks from concurrently-deployed surface current drifters, showing the applicability of this hybrid Lagrangian-Eulerian measurement scheme to understand flow patterns in this geomorphically-complex embayment. Mean current speeds (residence times) varied from 1-37 cm/s (2.8-0.1 hr), 1-36 cm/s (2.8-0.1 hr), and 5-64 cm/s (0.6-0.04 hr) under tidal, wind, and wave forcing, respectively; the highest speeds (lowest residence times) were measured on the outer reef flat closest to where waves were breaking on the reef crest and were slowest (longest) over the inner reef flat close to shore and deep in the embayment. ")
 
-## Authors
+## Keywords
 document.add_heading('Keywords:',level=3)
 document.add_paragraph("Coral reefs, Drifters, Acoustic backscatter, Water circulation, Residence time")
 
@@ -238,10 +238,9 @@ document.add_paragraph("Faga'alu Bay is situated on the western side of Pago Pag
 
 if 'Bay_clear' in locals():
     tables_and_figures.add_picture(Bay_clear['filename'],width=Inches(6))
-    add_figure_caption(Bay_clear['fig_num']," Image of the embayment on a typical, rain-free day. The darker areas of the bay are live coral, and the light areas are deeper pools with carbonate sand bottom.")  
 if 'Bay_sedplume' in locals():
     tables_and_figures.add_picture(Bay_sedplume['filename'],width=Inches(6))
-    add_figure_caption(Bay_sedplume['fig_num'],"Image of a flood plume (2/21/14) in the northern portion of the bay following a heavy precipitation event. Plumes usually persist for several hours, and rarely are seen after 24h due to the flushing of water through the deep channel and out to sea.")    
+    add_figure_caption(Bay_sedplume['fig_num']," A) Image of the embayment on a typical, rain-free day. The darker areas of the bay are live coral, and the light areas are deeper pools with carbonate sand bottom. B) Image of a flood plume (2/21/14) in the northern portion of the bay following a heavy precipitation event. Plumes usually persist for several hours, and rarely are seen after 24h due to the flushing of water through the deep channel and out to sea.")    
     
 #### METHODS
 methods_title = document.add_heading('Methods',level=2)
@@ -358,7 +357,7 @@ document.add_paragraph("Drifter data was spatially binned and EOF's and mean flo
 
 ## Gridded velocity by endmembers
 document.add_heading('Mean flow speed and direction in 100m gridded cells under Wind, Wave, Calm conditions',level=4)
-document.add_paragraph("Drifter data was spatially binned and mean flow velocity was calculated for all drifter tracks under each forcing condition (Figure "+Gridded_Velocity_endmembers['fig_num']+"). Over the whole bay, mean flow velocity varied from 1-37 cm/s, 1-36 cm/s, and 5-64 cm/s under tidal, wind, and wave forcing, respectively. Vetter (2013) observed flow speed in the main channel of 1-60 cm/s, with a mean of 14 cm/s. Drifter observations in the gridcell corresponding to Vetter's (2013) ADCP location showed flow speeds of 1-30 cm/s wtih a mean of 8 cm/s, for all forcing conditions. Vetter's (2013) ADCP time series shows lower flow speeds in the channel Jan-April than duriung the more active tradewind season June-October so it is likely that the drifter deployments included more quiescent distribution of days than occur during the whole year. While one large swell event was sampled during the drifter deployments, these conditions appear to be more common during the year than were observed during the one intensive week of drifter deployments. Also, Vetter's (2013) ADCP data ampled the full depth of the water column, as opposed to just the surface current that could be affected by winds, especially when strong east winds blow into the bay. This suggests that perhaps Eulerian and Lagrangian methods are more comparable in shallow depths, where the drifter is influenced by a relatively larger portion of the water column.")
+document.add_paragraph("Drifter data was spatially binned and mean flow velocity was calculated for all drifter tracks under each forcing condition. Over the whole bay, mean flow velocity varied from 1-37 cm/s, 1-36 cm/s, and 5-64 cm/s under tidal, wind, and wave forcing, respectively. Vetter (2013) observed flow speed in the main channel of 1-60 cm/s, with a mean of 14 cm/s. Drifter observations in the gridcell corresponding to Vetter's (2013) ADCP location showed flow speeds of 1-30 cm/s wtih a mean of 8 cm/s, for all forcing conditions. Vetter's (2013) ADCP time series shows lower flow speeds in the channel Jan-April than duriung the more active tradewind season June-October so it is likely that the drifter deployments included more quiescent distribution of days than occur during the whole year. While one large swell event was sampled during the drifter deployments, these conditions appear to be more common during the year than were observed during the one intensive week of drifter deployments. Also, Vetter's (2013) ADCP data ampled the full depth of the water column, as opposed to just the surface current that could be affected by winds, especially when strong east winds blow into the bay. This suggests that perhaps Eulerian and Lagrangian methods are more comparable in shallow depths, where the drifter is influenced by a relatively larger portion of the water column.")
 
 if 'Gridded_Velocity_endmembers' in locals():
     tables_and_figures.add_picture(Gridded_Velocity_endmembers['filename'],width=Inches(6))
