@@ -36,7 +36,7 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
     #### Show background image from DriftersBackground.mxd
     if showBackgroundImage==True:
-        background = np.flipud(plt.imread(figdir+'DrifterBackgrounds/DrifterBackground_matchCurts.png'))
+        background = np.flipud(plt.imread('C:/Users/Alex/Documents/GitHub/Faga-alu-Bay-water-circulation/Figures/Figure creation/fromAlex/DrifterBackgrounds/DrifterBackground_matchCurts.png'))
         gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
     #### Show Lat/Lon Grid        
     if showLatLonGrid==True:       
