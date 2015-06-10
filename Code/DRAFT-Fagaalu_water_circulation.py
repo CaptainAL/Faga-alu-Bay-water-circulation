@@ -28,6 +28,9 @@ from docx import *
 from docx.shared import Inches
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.style import WD_STYLE_TYPE
+from docx.dml.color import ColorFormat
+from docx.shared import RGBColor
 
 ## Set Directories
 git=True
@@ -47,30 +50,89 @@ elif git!=True: ## Local folders
 document = Document()
 tables_and_figures = Document()
 
+## Body Style
+document.styles['Normal'].font.name = 'Times'
+document.styles['Normal'].font.size = Pt(12)
+document.styles['Normal'].paragraph_format.first_line_indent = Inches(0.5)
+document.styles['Normal'].paragraph_format.line_spacing = 2
+
+tables_and_figures.styles['Normal'].font.name = 'Times'
+tables_and_figures.styles['Normal'].font.size = Pt(12)
+tables_and_figures.styles['Normal'].paragraph_format.first_line_indent = Inches(0.0)
+
+## Heading Styles
+## Title
+CR_Title = document.styles.add_style('Coral Reefs Title', WD_STYLE_TYPE.PARAGRAPH)
+CR_Title.base_style = document.styles['Normal']
+CR_Title.font.bold = True
+CR_Title.paragraph_format.first_line_indent = Inches(0.0)
+CR_Title.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+## 1
+CR_1 = document.styles.add_style('Heading CR1', WD_STYLE_TYPE.PARAGRAPH)
+CR_1.base_style = document.styles['Heading 1']
+CR_1.hidden = False
+CR_1.quick_style = True
+CR_1.priority = 1
+CR_1.font.name = 'Times'
+CR_1.font.size = Pt(12)
+CR_1.font.color.rgb = RGBColor(0,0,0)
+CR_1.font.bold = True
+CR_1.font.all_caps = True
+CR_1.paragraph_format.first_line_indent = Inches(0.0)
+
+## 2
+CR_2 = document.styles.add_style('Heading CR2', WD_STYLE_TYPE.PARAGRAPH)
+CR_2.base_style = document.styles['Heading 2']
+CR_2.font.name = 'Times'
+CR_2.font.size = Pt(12)
+CR_2.font.color.rgb = RGBColor(0,0,0)
+CR_2.font.bold = True
+CR_2.font.all_caps = True
+CR_2.paragraph_format.first_line_indent = Inches(0.0)
+
+## 3
+CR_3 = document.styles.add_style('Heading CR3', WD_STYLE_TYPE.PARAGRAPH)
+CR_3.base_style = document.styles['Heading 3']
+CR_3.font.name = 'Times'
+CR_3.font.size = Pt(12)
+CR_3.font.color.rgb = RGBColor(0,0,0)
+CR_3.font.bold = True
+CR_3.paragraph_format.first_line_indent = Inches(0.0)
+
+
+## Figure Captions
+CR_cap = tables_and_figures.styles.add_style('Coral Reefs caption', WD_STYLE_TYPE.PARAGRAPH)
+CR_cap.base_style = document.styles['Normal']
+CR_cap.paragraph_format.first_line_indent = Inches(0.0)
+
+
 ######## SOME TOOLS
 figure_captions = []
 def add_figure_caption(fig_num=str(len(document.inline_shapes)),caption=''):
-    manuscript_cap = document.add_paragraph("Insert Figure "+fig_num+" here")
-    manuscript_cap = document.add_paragraph("Figure "+fig_num+". "+caption)
-    manuscript_cap.paragraph_style = 'caption'
-    
-    #figs_cap = tables_and_figures.add_paragraph("Figure "+fig_num+". "+caption)
+    #manuscript_cap = document.add_paragraph("Insert Figure "+fig_num+" here")
+    #manuscript_cap = document.add_paragraph("Figure "+fig_num+". "+caption)
+    #manuscript_cap.paragraph_style = 'caption'
+    figs_cap = tables_and_figures.add_paragraph("Figure "+fig_num+". "+caption)
+    figs_cap.style = 'Coral Reefs caption'
     figure_captions.append("Figure "+fig_num+". "+caption)
     return
 
 table_titles = []
 def dataframe_to_table(df=pd.DataFrame(),table_num=str(len(document.tables)+1),caption='',fontsize=11):
     ## Add a place holder in the manuscript
-    manuscript_cap = document.add_paragraph("Insert Table "+table_num+" here")
-    manuscript_cap = document.add_paragraph("Table "+table_num+". "+caption)
-    manuscript_cap.paragraph_style = 'caption'
+    #manuscript_cap = document.add_paragraph("Insert Table "+table_num+" here")
+    #manuscript_cap = document.add_paragraph("Table "+table_num+". "+caption)
+    #manuscript_cap.paragraph_style = 'caption'
     
     ## construct table
     try:
         table = tables_and_figures.add_table(rows=1, cols=len(df.columns)) 
         ## Merge all cells in top row and add caption text
-        table_caption = table.rows[0].cells[0].merge(table.rows[0].cells[len(df.columns)-1])
-        table_caption.text = "Table "+table_num+". "+caption
+        table_caption_cell = table.rows[0].cells[0].merge(table.rows[0].cells[len(df.columns)-1])
+        table_caption = table_caption_cell.add_paragraph()
+        table_caption.add_run("Table "+table_num+". ").bold=True
+        table_caption.add_run(caption).bold=False
         ## Add  header
         header_row = table.add_row().cells
         col_count =0 ## counter  to iterate over columns
@@ -221,28 +283,35 @@ table_count,figure_count,equation_count=0, 0, 0
 ############################################################################################################################################
 
 #### TITLE
-title_title = document.add_heading('TITLE:',level=1)
-title_title.paragraph_format.space_before = 0
-title = document.add_heading("Eulerian and Lagrangian measurements of flow and residence time on a fringing reef flat embayment, American Samoa",level=1)
-title.paragraph_format.space_before = 0
+document.add_paragraph("Eulerian and Lagrangian measurements of flow and residence time on a fringing reef flat embayment, American Samoa").style = document.styles['Coral Reefs Title']
+
+document.add_paragraph("")
+
 ## Authors
-document.add_heading('Authors:',level=3)
-document.add_paragraph("Messina, A.M.a*, Storlazzi, C.D.b, Cheriton, O.M.b, Biggs, T.W.a")
-document.add_paragraph("a San Diego State University, Department of Geography, San Diego, CA 92182, amessina@rohan.sdsu.edu, +1-619-594-5437, tbiggs@mail.sdsu.edu, +1-619-594-0902")
-document.add_paragraph("b US Geological Survey, Pacific Coastal and Marine Science Center, Santa Cruz, CA 95060, cstorlazzi@usgs.gov, +1-831-460-7521, ocheriton@usgs.gov, +1-831-460-7579")
+document.add_paragraph("by").paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+document.add_paragraph("")
+
+document.add_paragraph("Messina, A.M.a*, Storlazzi, C.D.b, Cheriton, O.M.b, Biggs, T.W.a").paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+document.add_paragraph("")
+
+document.add_paragraph("a San Diego State University, Department of Geography, San Diego, CA 92182, amessina@rohan.sdsu.edu, +1-619-594-5437, tbiggs@mail.sdsu.edu, +1-619-594-0902").paragraph_format.first_line_indent = Inches(0.0)
+document.add_paragraph("")
+
+document.add_paragraph("b US Geological Survey, Pacific Coastal and Marine Science Center, Santa Cruz, CA 95060, cstorlazzi@usgs.gov, +1-831-460-7521, ocheriton@usgs.gov, +1-831-460-7579").paragraph_format.first_line_indent = Inches(0.0)
 
 document.add_paragraph("scripted terms: a, b, km2")
 #### ABSTRACT
-abstract_title = document.add_heading('ABSTRACT',level=2)
-abstract_title.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+document.add_paragraph('ABSTRACT').style = document.styles['Heading CR1']
 abstract = document.add_paragraph("Hydrodynamic processes on coral reefs are important for nutrient cycling, larval dispersal, temperature variability, and understanding the impacts of terrestrial sediment, nutrients, and contaminants from adjacent disturbed watersheds on coral reef ecosystems. In order to understand the spatial and temporal variability in flow velocities and the resulting residence time of water in the fringing coral reef flat-lined embayment of Faga'alu, on the island of Tutuila in American Samoa, data from acoustic current profilers and ocean surface current drifter deployments were combined with meteorologic data and numerical wave model results. These data and model results, collected over nine days, made it possible to evaluate the relative contribution of tidal, wind, and wave forcing on the flow patterns and resulting residence times of water masses over the reef. Mean residence times varied from 2.78-0.08 hr, 2.78-0.08 hr, and 0.55-0.04 h under tidal, wind, and wave forcing, respectively; the lowest residence times were on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the embayment near the streammouth. The observed spatial flow pattern suggests increased sediment discharge from human disturbance is deflected over the northern reef where sediment stress on corals is increased relative to the southern reef. These results demonstrate the applicability of a hybrid Lagrangian-Eulerian measurement scheme to understand spatially distribued and temporally extensive flow patterns and thus residence time in geomorphically-complex embayments that characterize many reef-lined coasts.")
 
 ## Keywords
-document.add_heading('KEYWORDS:',level=3)
-document.add_paragraph("coral reefs, drifters, Water circulation, Residence time")
+document.add_paragraph("")
+document.add_paragraph('KEYWORDS:').style = document.styles['Heading CR1']
+document.add_paragraph("coral reefs, drifters, Water circulation, Residence time").paragraph_format.first_line_indent = Inches(0.0)
+document.add_paragraph("")
 
 #### INTRODUCTION
-introduction_title = document.add_heading('INTRODUCTION',level=2)
+document.add_paragraph('INTRODUCTION').style = document.styles['Heading CR1']
 document.add_paragraph("Hydrodynamic conditions, including the residence time of waters over the reef flat, are a primary control on sediment dynamics in fringing reef embayments (Draut et al., 2009; Storlazzi et al., 2009 ), and are important for other biologically important processes like nutrient cycling, larval dispersal, and temperature regimes (Falter et al., 2004; Wyatt et al., 2012). Spatially distributed flow patterns under variable forcing conditions are logistically difficult to quantify, so conservation planning and remediation studies are currently done with coarse estimations of pollutant discharge and distance-based plume models (Klein et al., 2012). An improved understanding of the spatial and temporal variability in flow speeds, flow directions, and residence times of water over corals is needed for understanding sedimentation patterns and impacts to coral health. ....seems like it needs one more sentence here...")
 
 document.add_paragraph("By influencing orbital velocities, bed shear stress, and suspended sediment transport, current circulation is a strong control on the spatial distribution of deposition, resuspension, and dispersal of terrigenous sediment discharged to reefs (Hoitink and Hoekstra, 2003; Storlazzi et al., 2004; Presto et al., 2006; Hoeke et al., 2013). Hydrodynamic conditions control sediment accumulation in two ways: by limiting primary deposition, and by resuspending and advecting previously deposited sediment. Following large or intense storm events, sediment-rich freshwater is discharged into reef-fringed bays and advected seaward over the reef by momentum in a thin surface layer. This sediment-rich layer significantly attenuates photosynthetically active radiation and transports fine sediment over the reef where it can settle out of the water column and damage corals. Although the hypopycnal surface plume is able to move counter to prevailing ocean currents (upcurrent) by sliding over denser seawater, as sediment particles settle they are entrained and transported in the prevailing current (Wolanski et al., 2003). As flow velocities increase, residence time of the plume over the reef flat is decreased, limiting time for small particles to settle out of the water column. In reef environments where shallow reef crests limit the propagation of incoming surface wave energy, wave action alone may be insufficient to resuspend and disperse sediment, but in combination with wave- or wind-driven currents, orbital velocities may reach critical shear stress for sediment resuspension and dispersal (Ogston et al., 2004; Hoeke et al., 2013).")
@@ -260,10 +329,12 @@ document.add_paragraph("While Lagrangian measurements provide spatially explicit
 document.add_paragraph("Since water residence time is critical to sediment dynamics and coral heath, what is the water residence time over the Faga'alu reef flat and how does it change under wave, wind and tidal forcing? To address this main research question we compared the spatially extensive Lagrangian measurements with the temporally extensive Eulerian measurements to calculate spatially distributed water residence time under different 'end-member' forcing conditions: tide, wind, wave.")
 
 #### MATERIALS and METHODS
-study_area_title = document.add_heading('MATERIALS AND METHODS',level=2)
+document.add_paragraph("")
+document.add_paragraph('MATERIALS AND METHODS').style = document.styles['Heading CR1']
+document.add_paragraph("")
 
 #### STUDY AREA
-study_area_title = document.add_heading('STUDY AREA',level=3)
+document.add_paragraph('STUDY AREA').style = document.styles['Heading CR2']
 
 ## Study Area map
 if 'Study_Area_map' in locals():
@@ -287,12 +358,14 @@ document.add_paragraph("In August 2012, Faga'alu, was chosen by the US Coral Ree
 
 
 #### METHODS
-methods_title = document.add_heading('METHODS',level=3)
+document.add_paragraph("")
+methods_title = document.add_paragraph('METHODS').style = document.styles['Heading CR2']
 
 document.add_paragraph("To characterize the spatial flow pattern and determine the relationship between "+'endmember'+" forcing conditions and residence time of water over the reef flat in Faga'alu Bay, a combination of Eulerian and Lagrangian measurements was used. Lagrangian drifters were deployed to collect spatially distributed flow data and Eulerian current profilers were installed at fixed locations to collect long-term flow data in relation to forcing conditions.")
 
 ## Eulerian measurements (ADCPs)
-document.add_heading('Eulerian Measurements',level=4) 
+document.add_paragraph("")
+document.add_paragraph('Eulerian Measurements').style = document.styles['Heading CR3']
 
 document.add_paragraph("Three Nortek Aquadopp 2-MHz acoustic current profilers (ADCP) recorded tide, wave, and current data at three locations on the reef flat in Faga'alu for one week (Figure "+Study_Area_map['fig_num']+"). The profilers were attached to cinder block anchors (Figure "+Drifter_ADCP_pics['fig_num']+"c) and placed on sand or rubble patches amongst the corals, as deep as possible to maintain adequate water levels over the profiler during low tide (Figure "+Drifter_ADCP_pics['fig_num']+"d). The profilers collected 580 current samples at 2 Hz every 10 min and 2,048 wave samples at 2 Hz every 60 min.") 
 
@@ -302,7 +375,8 @@ if 'Drifter_ADCP_pics' in locals():
     add_figure_caption(Drifter_ADCP_pics['fig_num']," Five GPS-logging drifters and three acoustic current profilers were deployed on the reef flat in Faga'alu. TOP: Images of the shallow-water drifters a) on land, and b) deployed in the field. BOTTOM: Images of the acoustic current profilers deployed on the southern reef flat (AS1).")
 
 ## Lagrangian measurements (GPS-logging drifters)
-document.add_heading('Lagrangian Measurements',level=4)
+document.add_paragraph("")
+document.add_paragraph('Lagrangian Measurements').style = document.styles['Heading CR3']
 
 document.add_paragraph("Drifters for shallow coral reef environments need to be shallow enough to avoid interaction with corals, deep enough to not be affected by the surface movements, extend high enough to be visible but not high enough to be affected by winds, and finally, rugged enough to sustain the impact of a breaking wave onto the reef in the event it is entrained in the surf zone. Due to Faga'alu Bay's relatively small area (0.25 km2), high spatial density drifter data could be collected with a small number of drifters (n = 5) and field personnel (n = 1). Five drifters were designed and constructed with materials available on-island (PVC tubing and plastic sheeting), with a small waterproof housing for a HOLUX M1000 GPS recorder, and a float collar to maintain upright orientation (Figure "+Drifter_ADCP_pics['fig_num']+"a and b). The fins of the drifters were roughly 30 cm wide and 18 cm in height, constructed of 1.3 cm diameter PVC with holes drilled to flood the piping and compensate for the buoyancy of the pipe. The GPS logger was installed in a PVC housing at the top. The drifters were transported to the launch zones and retrieved using a stand-up paddle board.")
 
@@ -310,9 +384,10 @@ document.add_paragraph("Five drifters were released from the same five launch zo
 
 
 ## Ancillary Data
-document.add_heading('Ancillary Data',level=4) 
+document.add_paragraph("")
+document.add_paragraph('Ancillary Data').style = document.styles['Heading CR3']
 
-document.add_paragraph("The instrument deployments were timed to capture end-member forcing conditions that characterize the study area. The end member conditions time ranges were defined post-deployment using modeled and in situ wave, wind, and tide data following the methodology described by Presto et al. (2006).") 
+document.add_paragraph("The instrument deployments were timed to capture end-member forcing conditions that characterize the study area (Yamano et al. 1998). The end member conditions time ranges were defined post-deployment using modeled and in situ wave, wind, and tide data following the methodology described by Presto et al. (2006).") 
 ## Wave data
 document.add_paragraph("Incident wave conditions were recorded by a NIWA Dobie-A wave/tide gauge (DOBIE) deployed on the southern reef slope at a depth of 10 m (Figure "+Study_Area_map['fig_num']+"). The DOBIE sampled a 512s burst at 2 Hz every hour. The DOBIE malfunctioned and recorded no data coinciding with the ADCP deployment, but compared well (not shown) with NOAA/NCEP Wave Watch III (WW3; Tolman, 2002) modeled data on swell height and direction for the recorded data (Hoeke et al., 2011). WW3 model data, calibrated to DOBIE wave data, were used to define forcing during the ADCP and drifter deployments.")
 ## Wind data
@@ -320,7 +395,8 @@ document.add_paragraph("Wind speed, wind direction, barometric pressure, and pre
 
 
 ## Analytical Methods
-document.add_heading('Analytical Methods',level=4)
+document.add_paragraph("")
+document.add_paragraph('Analytical Methods').style = document.styles['Heading CR3']
 
 document.add_paragraph("Data from the drifters and ADCPs was subset by end-member forcing condition, and two techniques were used to compare the drifter results with the ADCP results: progressive vectors of cumulative flow and empirical orthogonal functions (EOF).")
 ## Progressive Vectors
@@ -329,9 +405,10 @@ document.add_paragraph("A series of 1 h progressive vector diagrams of cumulativ
 document.add_paragraph("EOF principal axes, variance ellipses, mean flow velocities, and residence times were calculated from ADCP data and spatially binned drifter data (100 m x 100 m) (MacMahan et al., 2010) under different endmember forcing conditions. Where drifters did not travel through a spatial bin, no EOF or residence time could be calculated. EOFs and mean flow velocities from drifters and ADCPs were compared to determine if the short-term observations from the drifters were similar to the long-term ADCP observations, and to demonstrate the usefulness of Lagrangian methods for describing spatial flow patterns compared to fixed Eulerian methods. Mean flow velocities were also used to calculate water residence time over the reef under different forcing conditions. For ADCP data, the mean flow speeds under different forcings were used to calculate residence time for a 100 m bin to correspond to the drifter results.")
 
 #### RESULTS ####
-results_title = document.add_heading('RESULTS',level=2)
+document.add_paragraph("")
+document.add_paragraph('RESULTS').style = document.styles['Heading CR1'] 
 ## Forcing: Wave, wind, tide during ADCP deployment
-document.add_heading('Oceanographic and Meteorologic Forcing ',level=3)
+document.add_paragraph('Oceanographic and Meteorologic Forcing').style = document.styles['Heading CR2']
 
 ### Forcing data
 if 'Forcing_data_timeseries' in locals():
@@ -346,8 +423,9 @@ if 'Endmember_table' in locals():
     dataframe_to_table(df=Endmember_table,table_num=Endmember_table.table_num,caption="End member periods",fontsize=9)
     #document.add_paragraph("**Note: Local time is UTC-11 so local dates are actually one day earlier (e.g. Tide=2/18-2/19 Local time)")
 
-## Eulerian Measurements (ADCP)    
-document.add_heading('Eulerian Measurements',level=3)
+## Eulerian Measurements (ADCP)
+document.add_paragraph("")    
+document.add_paragraph('Eulerian Measurements').style = document.styles['Heading CR2'] 
 
 document.add_paragraph("ADCPs at three locations on the reef flat recorded water flow for one week during 2014 YD 47-55. On the northern reef flat (AS3) the water level dropped below the minimum blanking distance of the ADCP at low tides (Figure "+ADCP_measurements['fig_num']+" d), and flow was assumed to be nearly zero during these times given the relatively low water depth. The short data gap at AS1 on YD 50 was due to the ADCP being disturbed, likely by fishermen looking for octopus.") 
 
@@ -362,7 +440,8 @@ if 'ADCP_measurements' in locals():
     
 
 ## Lagrangian Measurements (GPS-logging Drifters)
-document.add_heading('Lagrangian Measurements',level=3)
+document.add_paragraph("")
+document.add_paragraph('Lagrangian Measurements').style = document.styles['Heading CR2'] 
 document.add_paragraph("Thirty drifter deployments were conducted from January to February 2014, with 22 of those deployments coinciding with the ADCP deployment during YD 47-55 (February 15-23; Appendix Table "+Drifter_deployment_table.table_num+"). Drifter tracks from all deployments covered nearly the entire reef flat and ava channel (Figure "+ALL_Drifter_tracks['fig_num']+"), showing three gneral spatial patterns: 1) Faster flow speeds over the southern reef flat, 2) slower, more variable currents over the deeper pools of the southern backreef, northern reef, and ava channel near the stream mouth, and 3) faster current speeds exiting the east end of the ava. Several examples of cross-reef transport were observed, mainly exiting through a small channel in the southern reef crest at high tide under calm wave and wind conditions. Some continued moving out to sea and some were quickly re-entrained in the surf zone and traveled over the reef flat. Other anomalous drifter tracks show where drifters were entrained in the surf zone at the reef crest and quickly exited back out to sea in the far northeast portion of the study area.")
 
 if 'ALL_Drifter_tracks' in locals():
@@ -371,7 +450,8 @@ if 'ALL_Drifter_tracks' in locals():
     
 
 # Progressive Vectors
-document.add_heading('Progressive Vectors',level=3)
+document.add_paragraph("")
+document.add_paragraph('Progressive Vectors').style = document.styles['Heading CR2'] 
 document.add_paragraph("Progressive vectors were calculated from ADCP data and compared to drifter tracks for each end-member forcing condition (Figure "+Progressive_Vectors_ADCP_vs_Drifters['fig_num']+"). While the drifter tracks changed direction from onshore to cross-shore towards the ava channel, the progressive vectors over the southern reef showed little variation in flow direction, going ashore in some cases, indicating the flow velocity was relatively consistent at AS1 and AS2. The progressive vectors over the northern reef were much more erratic, and traveled much shorter distances than the drifter tracks due to the lower flow speeds observed at AS3. In general, the lengths of progressive vectors were similar to the actual tracks of the drifters, indicating similar flow speeds. The exception was over the northern reef, where drifters quickly moved into the ava channel and were influenced by very different currents than what was observed at AS3. While drifters could only be deployed at mid-high tides when the reef flat was deep enough to avoid getting stuck on corals, the ADCPs recorded flow over the complete tidal range. The shorter progressive vectors indicate flow at lower tides when flow speeds are reduced (Figure "+ADCP_measurements['fig_num']+").")
 
 if 'Progressive_Vectors_ADCP_vs_Drifters' in locals():
@@ -388,7 +468,8 @@ document.add_paragraph("Under wave forcing, longer progressive vectors at all lo
 
 # EOFs
 ## EOF Plots of all drifter data, in 100m bins, color ellipses by number of observations
-document.add_heading('Empirical Orthogonal Functions (EOF)',level=3)
+document.add_paragraph("")
+document.add_paragraph('Empirical Orthogonal Functions (EOF)').style = document.styles['Heading CR2']
 
 document.add_paragraph("EOFs, variance ellipses, and mean flow velocities were calculated from ADCP and spatially binned drifter data collected during each end member forcing condition (Figure "+PCA_gridded['fig_num']+"). The number of drifter tracks that traveled through each grid cell differed due to the spatial position of the grid cell relative to the flow pattern. Grid cells in the middle parts of the bay and ava channel had more drifter tracks than grid cells in the outer bay and near the shore. More observations suggests more certainty, while some of the outlying grid cells with a small number of observations may have been influenced by an anomalous drifter track or a small range of the end member forcing condition.")
 
@@ -410,7 +491,8 @@ document.add_paragraph("The highest mean flow speeds and most ellipsoid EOFs wer
   
 
 ## Residence Times for 100m bin grid
-document.add_heading('Residence Time', level=3)
+document.add_paragraph("")
+document.add_paragraph('Residence Time').style = document.styles['Heading CR2'] 
 
 document.add_paragraph("Water residence time over the reef flat was computed from the mean drifter velocities under different forcing conditions (Figure "+Gridded_ResidenceTime_endmembers['fig_num']+"). Residence times varied from 2.78-0.08 hr, 2.78-0.08 hr, and 0.56-0.04 h under tidal, wind, and wave forcing, respectively. The shortest residence times were measured near the southern reef crest, and under high wave conditions in general. The longest residence times were observed over the inner reef flat close to shore and in the northwest corner of the embayment, under tidal and wind forcing.")
 
@@ -424,7 +506,8 @@ document.add_paragraph("To compare the Eulerian and Lagrangian methods, mean flo
 #dataframe_to_table(df=compare_drifters_ADCP_speed_res_time,table_num=compare_drifters_ADCP_speed_res_time.table_num,caption="Mean flow speed and residence time computed from ADCP and corresponding spatially binned drifter data for different forcing conditions. Percent error = RMSE/mean.",fontsize=9)
 
 #### DISCUSSION
-document.add_heading('DISCUSSION',level=2)
+document.add_paragraph("")
+document.add_paragraph('DISCUSSION').style = document.styles['Heading CR1'] 
 
 ## General observations
 document.add_paragraph("The bay-wide mean current speeds (residence times) varied from 1-37 cm/s (2.78-0.08 hr), 1-36 cm/s (2.78-0.08 hr), and 5-64 cm/s (0.56-0.04 hr) under tidal, wind, and wave forcing, respectively. The highest flow speeds were consistently observed at AS1 and over the southern reef near the reef crest, suggesting the strong influence of breaking waves, even when the waves were relatively small. Over the northern reef, mean flow directions were more variable, reversing and flowing towards the river mouth under strong onshore winds and sometimes during tidal forcing with variable winds. The lowest flow speeds and highest residence times were consistently observed in the northwest corner of the bay, when wave-driven flow was low or when winds were onshore.")
@@ -443,17 +526,18 @@ document.add_paragraph("The Lagrangian methods measured higher mean flow speeds 
 document.add_paragraph("The overrall pattern of mean flow speeds and flow directions showed a predominantly clockwise circulation through the bay under all forcing conditions, with higher flow speeds throughout the bay during wave forcing, compared to tidal and wind forcing. The shortest residence times were measured on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the northwest corner of the embayment. Given the proximity of the northern reef to the stream mouth and the occurrence of floods under typically low wave conditions in the wet season, or moderate easterly winds during the dry season, this suggests the northern reef and areas of the southern reef bordering the ava channel are under greatest threat of land-based sources of pollution. The spatial flow pattern and longer residence times result in greater exposure (=intensity x duration) of the corals in these areas to sediment stress, and likely causes the reduced coral health in these locations.")
 
 #### Acknowledgements
-document.add_heading('ACKNOWLEDGEMENTS',level=2)
+document.add_paragraph("")
+document.add_paragraph('ACKNOWLEDGEMENTS').style = document.styles['Heading CR1'] 
 document.add_paragraph("This work was carried out in collaboration between San Diego State University and the US Geological Survey's Coral Reef Project. Funding was provided by a grant by the NOAA Coral Reef Conservation Program. A significant contribution of equipment and expertise was provided by the USGS Pacific Coastal and Marine Science Center. We would like to thank Dr. Michael Favazza for providing logistical support in the field.")
 
 #### References
 document.add_page_break()
-document.add_heading('References')
+document.add_paragraph('References')
 document.add_paragraph('Add at the end, using Mendeley refs')
 
 #### Appendix
 document.add_page_break()
-document.add_heading('APPENDIX',level=2)
+document.add_paragraph('APPENDIX').style = document.styles['Heading CR1'] 
 ## Appendix stuff goes here...
 ## Table: Drifter deployments dates and conditions
 if 'Drifter_deployment_table' in locals():
@@ -461,14 +545,14 @@ if 'Drifter_deployment_table' in locals():
     document.add_paragraph("")  
     
 #### Figure Captions
-document.add_heading('Figure Captions',level=2)
+document.add_paragraph('Figure Captions').style = document.styles['Heading CR2'] 
 for caption in figure_captions:
     document.add_paragraph(caption)
 
 #### Table Titles
-document.add_heading('Table Titles',level=2)
-for title in table_titles:
-    document.add_paragraph(title)
+document.add_paragraph('Table Titles').style = document.styles['Heading CR2'] 
+for t in table_titles:
+    document.add_paragraph(t)
 
 ## Save Document
 document.save(maindir+'Manuscript/DRAFT-Fagaalu_water_circulation.docx')
