@@ -3,7 +3,42 @@
 Created on Thu Apr 23 14:10:36 2015
 
 @author: Alex
+
 """
+
+# Prior work/data
+#document.add_paragraph("The only available data on current circulation around Tutuila was found in government and consultant reports, and no data on circulation over the reef flat has been collected (CH2M HILL, 1984; Jacob et al., 2012; Wiles et al., 2012). Militello et al. (2003) modeled wave-induced setup on reef flats and developed stage-frequency relationships for large tropical storms and hurricanes in American Samoa. Thompson and Demirbilek (2002) characterized offshore wave climate from data collected near Western Samoa (1985-1990), and used numerical modeling to simulate wave propagation dynamics in Pago Pago Harbor. ")
+
+
+## End member definitions
+def Endmember_definitions_table():
+    XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
+    endmember_table = XL.parse('EndmemberDefn',header=0,index_col=0,parse_cols='A:D',parse_dates=False)
+    endmember_table['End member']=endmember_table.index
+    endmember_table = endmember_table[['End member','Year Day 2014', 'Gregorian Day (UTC)','Gregorian Day (Local)']]
+    return endmember_table  
+Endmember_table = Endmember_definitions_table()
+Endmember_table.table_num = str(tab_count())    
+## Table: End member definitions
+if 'Endmember_table' in locals():
+    dataframe_to_table(df=Endmember_table,table_num=Endmember_table.table_num,caption="End member periods",fontsize=9)
+    #document.add_paragraph("**Note: Local time is UTC-11 so local dates are actually one day earlier (e.g. Tide=2/18-2/19 Local time)")
+
+### Pics of Bay
+Bay_sedplume = {'filename':maindir+'Figures/Pics/Bay clear and plume.png', 'fig_num':str(fig_count())}
+## Picture of sediment plume
+if 'Bay_sedplume' in locals():
+    tables_and_figures.add_picture(Bay_sedplume['filename'],width=Inches(6))
+    add_figure_caption(Bay_sedplume['fig_num']," Faga'alu Bay under storm and non-storm conditions. a) Image of the embayment on a typical, rain-free day. The darker areas of the bay are live coral, and the light areas are deeper pools with carbonate sand bottom. b) Image of a flood plume (2/21/14) in the northern portion of the bay following a heavy precipitation event: 51 mm in 2 h. Plumes usually persist for several hours, and rarely are seen after 24h due to the flushing of water through the ava channel and out to sea.") 
+
+Drifters for shallow coral reef environments need to be shallow enough to avoid interaction with corals, deep enough to not be affected by the surface movements, extend high enough to be visible but not high enough to be affected by winds, and finally, rugged enough to sustain the impact of a breaking wave onto the reef in the event it is entrained in the surf zone. 
+
+Vetter (unpublished)  deployed wave/tide gauges in Faga'alu Bay on the southern forereef and reef flat, and an ADCP in the ava , for one year (2012-2013). Vetter (unpublished) concluded flow dynamics in the bay were predominantly forced by waves breaking over the southern reef crest, and the wave influence increased linearly with tide height. Using an estimate of total lagoon volume, Vetter (unpublished) calculated flushing time varied from 2-33 h with wave heights of 0-1.6 m, and mean current speed out of the ava channel was 0.14 m/s.
+
+Imagery-based remote sensing is useful to map the temporal and spatial distribution of flood plume boundaries (Klemas, 2012; Warrick et al., 2007), but even high resolution imagery may not quantify the underlying current circulation, which is a strong control on sediment transport. Instead, 
+
+document.add_paragraph(" Hydrodynamic conditions control sediment accumulation in two ways: by limiting primary deposition, and by resuspending and advecting previously deposited sediment. Following large or intense storm events, sediment-rich freshwater is discharged into reef-fringed bays and advected seaward over the reef by momentum in a thin surface layer. This sediment-rich layer significantly attenuates photosynthetically active radiation and transports fine sediment over the reef where it can settle out of the water column and damage corals. Although the hypopycnal surface plume is able to move counter to prevailing ocean currents (upcurrent) by sliding over denser seawater, as sediment particles settle they are entrained and transported in the prevailing current (Wolanski et al., 2003). As flow velocities increase, residence time of the plume over the reef flat is decreased, limiting time for small particles to settle out of the water column. In reef environments where shallow reef crests limit the propagation of incoming surface wave energy, wave action alone may be insufficient to resuspend and disperse sediment, but in combination with wave- or wind-driven currents, orbital velocities may reach critical shear stress for sediment resuspension and dispersal (Ogston et al., 2004; Hoeke et al., 2013).")
+
 
 document.add_paragraph("The highest velocity flow was observed over the southernmost part of the reef (AS1) and was oriented predominantly in a northwesterly direction, indicating the strong influence of even small breaking waves over the reef crest. The portion of the reef crest adjacent AS1 receives the most wave energy in Faga'alu, and flow from the reef further to the south of AS1 is open to an even wider window of wave directions from the south and southwest. High speed currents were also measured on the southern reef adjacent to the 'ava at AS2, though not as consisently as at AS1, and predominantly in a southwesterly direction, reflecting the relative orientation of the reef crest. Whereas the flow at AS1 was deflected by the shore, turning the cross-reef flow of water north toward the deeper parts of the bay and the 'ava channel, the flow at AS2 was primarily shoreward into the deep pools in the inshore side of the reef flat. Flow data at AS1 also illustrate the modulating effect of tidal stage on flow speed over the reef flat similar to that observed by Storlazzi et al. (2004) and Presto et al. (2006). During YD 52-55, a decrease in flow speed was observed that coincided with the low tide. As the tide level decreased, less wave energy was able to propagate over the reef crest and friction and turbulence over the reef increases. This effect was observed, but smaller in magnitude, at AS2 because the mean water depth is greater and the height of the corals is less at AS2.")
 
