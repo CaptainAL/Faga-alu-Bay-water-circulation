@@ -304,10 +304,11 @@ p.add_run("b").font.superscript = True
 p.add_run("  US Geological Survey, Pacific Coastal and Marine Science Center, Santa Cruz, CA 95060, cstorlazzi@usgs.gov, +1-831-460-7521, ocheriton@usgs.gov, +1-831-460-7579")
 p.paragraph_format.first_line_indent = Inches(0.0)
 
-document.add_paragraph("scripted terms: km2")
+p = document.add_paragraph("scripted terms: km2, m/s -> m s")
+p.add_run("-1").font.superscript = True
 document.add_page_break()
 #### ABSTRACT
-document.add_paragraph('ABSTRACT').style = document.styles['Heading CR1']
+document.add_paragraph('Abstract').style = document.styles['Heading CR1']
 abstract = document.add_paragraph("Hydrodynamic processes on coral reefs are important for nutrient cycling, larval dispersal, temperature variability, and understanding the impacts of terrestrial sediment, nutrients, and contaminants from adjacent disturbed watersheds on coral reef ecosystems. In order to understand the spatial and temporal variability in flow velocities and the resulting residence time of water in the fringing coral reef flat-lined embayment of Faga'alu, on the island of Tutuila in American Samoa, data from acoustic current profilers and surface cruciform drifter deployments were combined with meteorologic data and numerical wave model results. These data and model results, collected over nine days, made it possible to evaluate the relative contribution of tidal, wind, and wave forcing on the flow patterns and resulting residence times of water masses over the reef. Mean residence times varied from 2.78-0.08 hr, 2.78-0.08 hr, and 0.55-0.04 h under tidal, wind, and wave forcing, respectively; the lowest residence times were on the outer reef flat closest to where waves were breaking on the reef crest and were longest over the inner reef flat close to shore and deep in the embayment near the streammouth. These results demonstrate the applicability of a hybrid Lagrangian-Eulerian measurement scheme to understand spatially distribued and temporally extensive flow patterns and thus residence time in geomorphically-complex embayments that characterize many reef-lined coasts.")
 
 ## Keywords
@@ -317,8 +318,8 @@ document.add_paragraph("coral reefs, drifters, Water circulation, Residence time
 document.add_paragraph("")
 
 #### INTRODUCTION
-document.add_paragraph('INTRODUCTION').style = document.styles['Heading CR1']
-document.add_paragraph("Circulation and residence time of reef waters are significant controls on the chemistry and biology of coral reefs (Lowe and Falter, 2015). Hydrodynamic conditions, including the residence time of waters over the reef flat, are a primary control on sediment dynamics in fringing reef embayments (Draut et al., 2009; Storlazzi et al., 2009) and are important for other biologically important processes like nutrient cycling, larval dispersal, and temperature regimes (Falter et al., 2004; Wyatt et al., 2012). By influencing orbital velocities, bed shear stress, and suspended sediment transport, current circulation is a strong control on the spatial distribution of deposition, resuspension, and dispersal of terrigenous sediment discharged to reefs (Hoitink and Hoekstra, 2003; Storlazzi et al., 2004; Presto et al., 2006; Hoeke et al., 2013). Spatially distributed flow patterns under variable forcing conditions are logistically difficult to quantify, so conservation planning and remediation studies are currently done with coarse estimations of pollutant discharge and distance-based plume models (Klein et al., 2012). An improved understanding of the spatial and temporal variability in flow speeds, flow directions, and residence times of water over corals is needed for understanding sedimentation patterns and impacts to coral health.")
+document.add_paragraph('Introduction').style = document.styles['Heading CR1']
+document.add_paragraph("Hydrodynamic conditions, including the residence time of waters over the reef flat, significantly control the chemistry and biology of coral reefs (Lowe and Falter, 2015) by influencing nutrient cycling, larval dispersal, and temperature regimes (Falter et al., 2004; Wyatt et al., 2012), and are also a primary control on sediment dynamics in fringing reef embayments (Draut et al., 2009; Storlazzi et al., 2009)  By influencing orbital velocities, bed shear stress, and suspended sediment transport, current circulation is a strong control on the spatial distribution of deposition, resuspension, and dispersal of terrigenous sediment discharged to reefs (Hoitink and Hoekstra, 2003; Storlazzi et al., 2004; Presto et al., 2006; Hoeke et al., 2013). Spatially distributed flow patterns under variable forcing conditions are logistically difficult to quantify, so conservation planning and remediation studies are currently done with coarse estimations of pollutant discharge and distance-based plume models (Klein et al., 2012). An improved understanding of the spatial and temporal variability in flow speeds, flow directions, and residence times of water over corals is needed for understanding sedimentation patterns and impacts to coral health.")
 
 document.add_paragraph("Studies in various coral reef environments adjacent high islands showed current speeds, directions, and residence times over reef flats are controlled by wave, wind, and tidal forcing, depending on the orientation and shape of the reef, relative to the prevailing wave, wind, and tidal climates (Storlazzi et al., 2004; Presto et al., 2006; Hench et al., 2008; Storlazzi and Field, 2008; Hoeke et al., 2011). Variations in reef morphology relative to the orientation of the dominant meteorological and oceanographic forcing can generate heterogeneous waves and currents over relatively small (hundreds of meters) spatial scales, unlike those observed along relatively linear sandy shorelines (Storlazzi et al., 2009; Hoeke et al., 2011, 2013). Current speeds and patterns over reefs exposed to remotely-generated swell are generally dominated by wave forcing (Hench et al., 2008; Hoeke et al., 2011; Vetter et al., 2010), whereas wind forcing dominates reefs protected from swell (Yamano et al. 1998; Presto et al., 2006). Tidal elevation modulates both wave-driven currents by controlling the reef crest depth and subsequent wave energy propagation into the reef flat, and wind-driven currents by regulating water depth for wind-driven surface wave development (Presto et al., 2006). Reef flat currents in wave-driven environments exhibit a pattern of rapid, cross-shore flow near the reef crest that slows moving shoreward and turns along-shore towards a deep channel where water returns seaward (Hench et al., 2008; Lowe et al., 2009; Wyatt et al., 2010). In wind-driven systems, current directions are more predominantly in the direction of the wind with possible cross-shore exchange from the reef flat to the forereef (Storlazzi et al., 2004).")
 
@@ -333,10 +334,10 @@ document.add_paragraph("Because the exposure of corals to terrestrial sediment e
 
 #### MATERIALS and METHODS
 document.add_paragraph("")
-document.add_paragraph('MATERIALS AND METHODS').style = document.styles['Heading CR1']
+document.add_paragraph('Materials and Methods').style = document.styles['Heading CR1']
 
 #### STUDY AREA
-document.add_paragraph('STUDY AREA').style = document.styles['Heading CR2']
+document.add_paragraph('Study Area').style = document.styles['Heading CR2']
 
 ## Study Area map
 if 'Study_Area_map' in locals():
@@ -362,7 +363,7 @@ p.add_run(") are generally about 9 s or less, rarely exceed 13 s, but occasional
 
 #### METHODS
 document.add_paragraph("")
-methods_title = document.add_paragraph('METHODS').style = document.styles['Heading CR2']
+methods_title = document.add_paragraph('Methods').style = document.styles['Heading CR2']
 
 document.add_paragraph("To characterize the spatial flow pattern and determine the relationship between "+'endmember'+" forcing conditions and residence time of water over the reef flats in Faga'alu Bay, a combination of Eulerian and Lagrangian measurements were used. Lagrangian drifters were deployed to collect spatially distributed flow data and Eulerian current profilers were installed at fixed locations to collect long-term flow data in relation to forcing conditions.")
 
@@ -408,7 +409,7 @@ document.add_paragraph("EOF principal axes, variance ellipses, mean flow velocit
 
 #### RESULTS ####
 document.add_paragraph("")
-document.add_paragraph('RESULTS').style = document.styles['Heading CR1'] 
+document.add_paragraph('Results').style = document.styles['Heading CR1'] 
 ## Forcing: Wave, wind, tide during ADCP deployment
 document.add_paragraph('Oceanographic and Meteorologic Forcing').style = document.styles['Heading CR2']
 
