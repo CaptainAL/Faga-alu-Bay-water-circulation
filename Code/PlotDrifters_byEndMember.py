@@ -54,6 +54,9 @@ from DrifterDataAnalysisTools import point_in_polygon, point_in_gridcell, point_
 from DrifterDataAnalysisTools import plot_arrows_by_speed, plot_arrows_by_gridcell, plot_arrows_by_launchzone
 from DrifterDataAnalysisTools import label_grid_cells, label_launch_zones
 
+## Statistical Analysis
+from scipy import stats
+
 pd.set_option('display.large_repr', 'info')
 
 ## Set Directories
@@ -63,7 +66,7 @@ if git==True: ## Git repository
     datadir=maindir+'Data/'
     trackdir = maindir+'Data/AllTracks/'
     GISdir = maindir+'Data/DriftersGIS/'
-    figdir = maindir+'Figures/fromAlex/'
+    figdir = maindir+'Figures/Figure creation/fromAlex/'
     dirs={'main':maindir,'data':datadir,'track':trackdir,'GIS':GISdir,'fig':figdir}
 elif git!=True: ## Local folders
     datadir = 'C:/Users/Alex/Desktop/'
@@ -85,37 +88,159 @@ deployments=pd.DataFrame()
 for deployment in DepInfo.iterrows():
     start=my_parser(deployment[1]['Date'],deployment[1]['Start Time'])
     end=my_parser(deployment[1]['Date'],deployment[1]['End Time'])
-    dep_num = deployment[0]
+    dep_num = deployment[1]['Deployment']
+    end_mem = deployment.index
     #print dep_num,pd.date_range(start,end,freq='1Min')
-    deployments=deployments.append(pd.DataFrame(data={'#':dep_num,'start':start,'end':end},index=[dep_num]))
+    deployments=deployments.append(pd.DataFrame(data={'#':dep_num,'start':start,'end':end,'EndMember':end_mem},index=[dep_num]))
       
 #### Plot selections
 Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,showLaunchZones=False)  
 sc=plot_arrows_by_speed(Map,AllPoints)
        
-    
-wind=[4,5,6,7,8,10,11,12,13,14,15,16]
-calm=[1,2,3,9,17,18,19,20,21,22,23,24]
-wave=range(25,31)
+tide=[1,2,3,13,14,15,16,17,18,19,20]    
+wind=[4,5,6,7,8,9,10,11,12]
+wave=range(21,31)
 alldeps=range(1,31)
-deplist = alldeps
 
-onebyone=False
+end_member_dict = {'tide':tide,'wind':wind,'wave':wave}
+
+onebyone = True
 if onebyone==True:
-    SelPoints = pd.DataFrame()
-    for dep in deployments.ix[deplist].iterrows(): ## put in Deployment #(s) here
-        Map = Drifter_Plot()
+    for key in end_member_dict.keys():
+        print key
+        deplist = end_member_dict[key]
+        print deplist
+        for dep in deployments.ix[deplist].iterrows(): ## put in Deployment #(s) here
+            #Map = Drifter_Plot()
+            print dep[0], dep[1]['start'],dep[1]['end']
+            if key == 'tide':
+                print "getting tide points"
+                SelPoints  = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
+                TidePoints = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
+            if key == 'wind':
+                print "getting wind points"
+                SelPoints  = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
+                WindPoints = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple 
+            if key == 'wave':
+                print "getting wave points"
+                SelPoints  = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
+                WavePoints = AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
+            
+            #sc=plot_arrows_by_speed(Map,SelPoints)
+        
     
-        print dep[0], dep[1]['start'],dep[1]['end']
-    
-        SelPoints= AllPoints[dep[1]['start']:dep[1]['end']] ## [1] gets data from row tuple
-        sc=plot_arrows_by_speed(Map,SelPoints)
-    
+            #plt.suptitle('Deployment: #'+str(dep[0])+' '+str(dep[1]['start'])+'-'+str(dep[1]['end']))
+            #plt.savefig(figdir+'drifts/deployment_'+str(dep[0])+'.png')
 
-        plt.suptitle('Deployment: #'+str(dep[0])+' '+str(dep[1]['start'])+'-'+str(dep[1]['end']))
-        plt.savefig(figdir+'drifts/deployment_'+str(dep[0])+'.png')
+#plt.show()
 
-plt.show()
+## Compile
+Speeds = pd.concat([TidePoints['speed m/s'].reset_index()['speed m/s'],WindPoints['speed m/s'].reset_index()['speed m/s'],WavePoints['speed m/s'].reset_index()['speed m/s']],ignore_index=True,axis=1)    
+Speeds.columns = ['TIDE','WIND','WAVE']
+
+## Parametric
+f1,p1 =  stats.f_oneway(Speeds['TIDE'].dropna(),Speeds['WIND'].dropna(),Speeds['WAVE'].dropna())   
+print "ANOVA: f = %g  p = %g" % (f1,p1)
+TIDE_WIND_ttest1 = stats.ttest_ind(TidePoints['speed m/s'].dropna(), WindPoints['speed m/s'].dropna(), axis=0, equal_var=True)   
+print "TIDE v WIND ttest_ind: t = %g  p = %g" % TIDE_WIND_ttest1
+TIDE_WAVE_ttest1 = stats.ttest_ind(TidePoints['speed m/s'].dropna(), WavePoints['speed m/s'].dropna(), axis=0, equal_var=True)   
+print "TIDE v WAVE ttest_ind: t = %g  p = %g" % TIDE_WAVE_ttest1 
+WIND_WAVE_ttest1 = stats.ttest_ind(WindPoints['speed m/s'].dropna(), WavePoints['speed m/s'].dropna(), axis=0, equal_var=True)   
+print "WIND v WAVE ttest_ind: t = %g  p = %g" % WIND_WAVE_ttest1 
+
+
+## Non-Parametric
+H1, KWp1 = stats.mstats.kruskalwallis(TidePoints['speed m/s'].dropna(),WindPoints['speed m/s'].dropna(),WavePoints['speed m/s'].dropna())
+print "Kruskall-Wallis: H = %g  p = %g" % (H1, KWp1) 
+TIDE_WIND_mannwhit1 = stats.mannwhitneyu(TidePoints['speed m/s'].dropna(), WindPoints['speed m/s'].dropna())   
+print "TIDE v WIND mannwhit: u = %g  p/2 = %g" % TIDE_WIND_mannwhit1
+TIDE_WAVE_mannwhit1 = stats.mannwhitneyu(TidePoints['speed m/s'].dropna(),WavePoints['speed m/s'].dropna())   
+print "TIDE v WAVE mannwhit: u = %g  p/2 = %g" % TIDE_WAVE_mannwhit1 
+WIND_WAVE_mannwhit1 = stats.mannwhitneyu(WindPoints['speed m/s'].dropna(),WavePoints['speed m/s'].dropna())   
+print "WIND v WAVE mannwhit: u = %g  p/2 = %g" % WIND_WAVE_mannwhit1 
+
+
+## PRINT RESULTS
+print ''
+p = 0.05
+print 'p='+str(p)
+print 'Parametric statistical tests'
+
+if p1 <= p:
+    print "TIDE, WIND, and WAVE are significantly different than each other. ANOVA: f = %.3f  p = %.4f" % (f1,p1)
+elif p1 > p:
+    print "TIDE, WIND, and WAVE are NOT significantly different than each other. ANOVA: f = %.3f  p = %.4f" % (f1,p1)
+    
+if TIDE_WIND_ttest1[1] <= p:
+    print "TIDE and WIND are significantly different than each other. t = %.2f  p = %.4f" % TIDE_WIND_ttest1
+elif TIDE_WIND_ttest1[1] > p:
+    print "TIDE and WIND are NOT significantly different than each other. t = %.2f  p = %.4f" % TIDE_WIND_ttest1
+    
+if TIDE_WAVE_ttest1[1] <= p:
+    print "TIDE and WAVE are significantly different than each other. t = %.2f  p = %.4f" % TIDE_WAVE_ttest1
+elif TIDE_WAVE_ttest1[1] > p:
+    print "TIDE and WAVE are NOT significantly different than each other. t = %.2f  p = %.4f" % TIDE_WAVE_ttest1
+
+if WIND_WAVE_ttest1[1] <= p:
+    print "WIND and WAVE are significantly different than each other. t = %.2f  p = %.4f" % WIND_WAVE_ttest1
+elif WIND_WAVE_ttest1[1] > p:
+    print "WIND and WAVE are NOT significantly different than each other. t = %.2f  p = %.4f" % WIND_WAVE_ttest1   
+
+
+print ''
+print 'Non-parametric statistical tests'
+if KWp1 <= p:
+    print "TIDE, WIND, and WAVE are significantly different than each other. Kruskall-Wallis: H = %g  p = %g" % (H1, KWp1) 
+elif KWp1 > p:
+    print "TIDE, WIND, and WAVE are NOT significantly different than each other. Kruskall-Wallis: H = %g  p = %g" % (H1, KWp1) 
+    
+if TIDE_WIND_mannwhit1[1] <= p:
+    print "TIDE and WIND are significantly different than each other. u = %.2f  p/2 = %.4f" % TIDE_WIND_mannwhit1
+elif TIDE_WIND_mannwhit1[1] > p:
+    print "TIDE and WIND are NOT significantly different than each other. u = %.2f  p/2 = %.4f" % TIDE_WIND_mannwhit1
+    
+if TIDE_WAVE_mannwhit1[1] <= p:
+    print "TIDE and WAVE are significantly different than each other. u = %.2f  p/2 = %.4f" % TIDE_WAVE_mannwhit1
+elif TIDE_WAVE_mannwhit1[1] > p:
+    print "TIDE and WAVE are NOT significantly different than each other. u = %.2f  p/2 = %.4f" % TIDE_WAVE_mannwhit1
+
+if WIND_WAVE_mannwhit1[1] <= p:
+    print "WIND and WAVE are significantly different than each other. u = %.2f  p/2 = %.4f" % WIND_WAVE_mannwhit1
+elif WIND_WAVE_mannwhit1[1] > p:
+    print "WIND and WAVE are NOT significantly different than each other. u = %.2f  p/2 = %.4f" % WIND_WAVE_mannwhit1   
+
+mpl.rc('legend',scatterpoints=1)  
+fig, ax1 =plt.subplots(1,1,figsize=(8,5),sharey=True)
+#ax1.text(0.01,0.95,'(a) Non-storm',verticalalignment='top', horizontalalignment='left',transform=ax1.transAxes,color='k',fontsize=10,fontweight='bold')
+#ax2.text(0.01,0.95,'(b) Storm',verticalalignment='top', horizontalalignment='left',transform=ax2.transAxes,color='k',fontsize=10,fontweight='bold')     
+
+SpeedsMeans_1 = [Speeds['TIDE'].mean(),Speeds['WIND'].mean(),Speeds['WAVE'].mean()]
+SpeedsVals = np.concatenate([Speeds['TIDE'].dropna().values.tolist(),Speeds['WIND'].dropna().values.tolist(),Speeds['WAVE'].dropna().values.tolist()])
+SpeedsCategories = np.concatenate([[1]*len(Speeds['TIDE'].dropna()),[2]*len(Speeds['WIND'].dropna()),[3]*len(Speeds['WAVE'].dropna())])
+n_TIDE, n_WIND, n_WAVE = str(len(Speeds['TIDE'].dropna())), str(len(Speeds['WIND'].dropna())), str(len(Speeds['WAVE'].dropna()))
+Speeds.columns = ['TIDE: n='+n_TIDE, 'WIND: n='+n_WIND, 'WAVE: n='+n_WAVE]
+bp1 = Speeds.boxplot(ax=ax1)
+ax1.scatter(SpeedsCategories,SpeedsVals,s=40,marker='+',c='grey',label='speed m/s')   
+ax1.set_ylabel('m/s')
+plt.tight_layout(pad=0.01)
+plt.legend()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
