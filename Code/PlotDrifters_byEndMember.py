@@ -329,7 +329,7 @@ plt.savefig(figdir+'End member speed boxplots and histograms')
 
 
 
-fig, ax2 =plt.subplots(1,1,figsize=(8,8))
+fig, ax2 =plt.subplots(1,1,figsize=(6,4))
 ## HISTOGRAM
 x0 = Speeds['TIDE'].dropna().values
 x1 = Speeds['WIND'].dropna().values
@@ -343,14 +343,14 @@ wave = np.ones_like(x2)
 wave[:len(x2)/2] = 0.5
 
 ## Line at Mean and Median
-ax2.axvline(Speeds['TIDE'].mean(),c='silver',label='TIDE mean:'+"%.1f"%Speeds['TIDE'].mean())
-ax2.axvline(Speeds['TIDE'].median(),c='silver',ls='--',label='TIDE median: '+"%.1f"%Speeds['TIDE'].median())
+ax2.axvline(Speeds['TIDE'].mean(),c='silver')#,label='TIDE mean:'+"%.1f"%Speeds['TIDE'].mean())
+ax2.axvline(Speeds['TIDE'].median(),c='silver',ls='--')#,label='TIDE median: '+"%.1f"%Speeds['TIDE'].median())
 #ax2.text(Speeds['WIND'].mean(),115,'WIND mean: '+"%.3f"%Speeds['WIND'].mean(),rotation=90)
-ax2.axvline(Speeds['WIND'].mean(),c='gray',label='WIND mean: '+"%.1f"%Speeds['WIND'].mean())
-ax2.axvline(Speeds['WIND'].median(),c='gray',ls='--',label='WIND median: '+"%.1f"%Speeds['WIND'].median())
+ax2.axvline(Speeds['WIND'].mean(),c='gray')#,label='WIND mean: '+"%.1f"%Speeds['WIND'].mean())
+ax2.axvline(Speeds['WIND'].median(),c='gray',ls='--')#,label='WIND median: '+"%.1f"%Speeds['WIND'].median())
 
-ax2.axvline(Speeds['WAVE'].mean(),c='k',label='WAVE mean: '+"%.1f"%Speeds['WAVE'].mean())
-ax2.axvline(Speeds['WAVE'].median(),c='k',ls='--',label='WAVE median: '+"%.1f"%Speeds['WAVE'].median())
+ax2.axvline(Speeds['WAVE'].mean(),c='k')#,label='WAVE mean: '+"%.1f"%Speeds['WAVE'].mean())
+ax2.axvline(Speeds['WAVE'].median(),c='k',ls='--')#,label='WAVE median: '+"%.1f"%Speeds['WAVE'].median())
 
 
 n, bins, patches = ax2.hist( [x0,x1,x2], 10, weights=[tide, wind, wave], histtype='bar',cumulative=False, label=['TIDE', 'WIND', 'WAVE'], color=['silver','gray','k'])
@@ -360,4 +360,6 @@ ax2.set_xlabel('cm/s'), ax2.set_ylabel('Number of Observations')
 
 
 plt.tight_layout(pad=0.01)
-plot_url = py.plot_mpl(fig, filename = 'drifters - histogram')
+plt.savefig(figdir+'End member speed histograms.png')
+plt.savefig(figdir+'End member speed histograms.pdf')
+#plot_url = py.plot_mpl(fig, filename = 'drifters - histogram')
