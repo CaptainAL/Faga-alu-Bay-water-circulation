@@ -146,7 +146,9 @@ def bearing(pointA, pointB):
 #### with the speed, compass bearing, Launchzone and Grid cell of the point
 def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
     AllPoints = pd.DataFrame() ## create empty dataframes to start
+    track_num = 0
     for track in tracklist:
+        track_num+=1
         points={} ## new dictionary per track
         #print 'Track name: '+str(track.name)
         count=0 ## for LaunchZone determination
@@ -169,12 +171,13 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
                 ## Get point data (lat,lon,UTM x, UTM y,LaunchZone)
                 lat,lon = point.latitude,point.longitude
                 lat_utm,lon_utm = utm.from_latlon(point.latitude,point.longitude)[0],utm.from_latlon(point.latitude,point.longitude)[1]
-                points[point.time]=(lat,lon,lat_utm,lon_utm,Gridcell,LaunchZone) ## utm.py returns the zone as well, just need northing and easting
+                points[point.time]=(lat,lon,lat_utm,lon_utm,track_num,Gridcell,LaunchZone) ## utm.py returns the zone as well, just need northing and easting
         ## Calculates speed and direction per point in each track      
         #### Calcs
         Points = pd.DataFrame.from_dict(points,orient='index',dtype=np.float64).sort().resample('1Min')##if you change resample time you have to change the speed calc below
-        Points.columns=['lat','lon','Y','X','Gridcell','LaunchZone']
+        Points.columns=['lat','lon','Y','X','TrackNumber','Gridcell','LaunchZone']
         ##
+        Points['TrackNumber'] = Points['TrackNumber'].round()
         Points['Gridcell']=Points['Gridcell'].round()
         Points['X before']=Points['X'].shift(1)
         Points['Y before']=Points['Y'].shift(1)
