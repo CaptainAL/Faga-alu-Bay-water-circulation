@@ -58,6 +58,21 @@ def v_ferg(rop,rof,d,visc,C1,C2):
             (0.75*C2*R*9.81*d**3)**0.5))
         return w
 
+## Coarse silt
+coars_silt_mm = 0.063
+coarse_silt_speed = v_stokes(rop,rof, coarse_silt_mm /1000,visc,C1)
+coarse_silt_settling_1m = 1/ coarse_silt_speed /60
+
+print 'Stokes v for coarse silt (0.063 mm) = '+"%.3f"%v_stokes(rop,rof,.063 /1000,visc,C1)+' m/s'
+print 'Settling time for coarse silt (1m) = '+"%.0f"%coarse_silt_settling_1m+' min'
+
+## Fine silt
+fine_silt_mm = 0.002
+fine_silt_speed = v_stokes(rop,rof, fine_silt_mm /1000,visc,C1)
+fine_silt_settling_1m = 1/ fine_silt_speed /60/60
+print 'Stokes v for fine silt (0.002 mm) = '+"%.3g"%fine_silt_speed+' m/s'
+print 'Settling time for fine silt (1m) = '+"%.0f"%fine_silt_settling_1m+' hr'
+
 
 d = np.arange(0,0.0005,0.000001)
 ws = v_stokes(rop,rof,d,visc,C1)
