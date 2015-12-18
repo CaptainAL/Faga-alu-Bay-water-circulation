@@ -63,13 +63,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1680"
-     inkscape:window-height="987"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
      id="namedview4"
      showgrid="false"
-     inkscape:zoom="1.4687223"
-     inkscape:cx="317.31841"
-     inkscape:cy="713.64869"
+     inkscape:zoom="0.64962958"
+     inkscape:cx="398.896"
+     inkscape:cy="507.45733"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -97,6 +97,7 @@
      sodipodi:role="line"
      id="tspan20">47</tspan></text>
 
+
 <g
    id="g22"
    transform="translate(138.8335,724.7837)"><path
@@ -111,6 +112,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan28">48</tspan></text>
+
 
 <g
    id="g30"
@@ -127,6 +129,7 @@
      sodipodi:role="line"
      id="tspan36">49</tspan></text>
 
+
 <g
    id="g38"
    transform="translate(257.3335,724.7837)"><path
@@ -141,6 +144,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan44">50</tspan></text>
+
 
 <g
    id="g46"
@@ -157,6 +161,7 @@
      sodipodi:role="line"
      id="tspan52">51</tspan></text>
 
+
 <g
    id="g54"
    transform="translate(375.917,724.7837)"><path
@@ -171,6 +176,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan60">52</tspan></text>
+
 
 <g
    id="g62"
@@ -187,6 +193,7 @@
      sodipodi:role="line"
      id="tspan68">53</tspan></text>
 
+
 <g
    id="g70"
    transform="translate(494.417,724.7837)"><path
@@ -201,6 +208,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan76">54</tspan></text>
+
 
 <g
    id="g78"
@@ -217,6 +225,7 @@
      sodipodi:role="line"
      id="tspan84">55</tspan></text>
 
+
 <g
    id="g86"
    transform="translate(553.75,633.3667)"><path
@@ -231,6 +240,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan92">-0.4</tspan></text>
+
 
 <g
    id="g94"
@@ -247,6 +257,7 @@
      sodipodi:role="line"
      id="tspan100">-0.2</tspan></text>
 
+
 <g
    id="g102"
    transform="translate(553.75,679.1167)"><path
@@ -260,6 +271,7 @@
      x="0"
      y="0"
      id="tspan108">0</tspan></text>
+
 
 <g
    id="g110"
@@ -275,6 +287,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan116">0.2</tspan></text>
+
 
 <g
    id="g118"
@@ -300,6 +313,7 @@
      sodipodi:role="line"
      id="tspan136">Tide level</tspan></text>
 
+
 <text
    transform="matrix(0,1,1,0,51.749,670.7061)"
    id="text138"><tspan
@@ -308,6 +322,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan140">[m]</tspan></text>
+
 
 <path
    d="m 79.583,588.034 474.167,0 0,-91.417 -474.167,0 0,91.417 z"
@@ -328,6 +343,7 @@
      sodipodi:role="line"
      id="tspan150">47</tspan></text>
 
+
 <g
    id="g152"
    transform="translate(138.8335,588.0337)"><path
@@ -342,6 +358,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan158">48</tspan></text>
+
 
 <g
    id="g160"
@@ -358,6 +375,7 @@
      sodipodi:role="line"
      id="tspan166">49</tspan></text>
 
+
 <g
    id="g168"
    transform="translate(257.3335,588.0337)"><path
@@ -372,6 +390,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan174">50</tspan></text>
+
 
 <g
    id="g176"
@@ -388,6 +407,7 @@
      sodipodi:role="line"
      id="tspan182">51</tspan></text>
 
+
 <g
    id="g184"
    transform="translate(375.917,588.0337)"><path
@@ -402,6 +422,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan190">52</tspan></text>
+
 
 <g
    id="g192"
@@ -418,6 +439,7 @@
      sodipodi:role="line"
      id="tspan198">53</tspan></text>
 
+
 <g
    id="g200"
    transform="translate(494.417,588.0337)"><path
@@ -432,6 +454,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan206">54</tspan></text>
+
 
 <g
    id="g208"
@@ -448,6 +471,7 @@
      sodipodi:role="line"
      id="tspan214">55</tspan></text>
 
+
 <g
    id="g216"
    transform="translate(553.75,511.8667)"><path
@@ -463,6 +487,7 @@
      sodipodi:role="line"
      id="tspan222">-0.1</tspan></text>
 
+
 <g
    id="g224"
    transform="translate(553.75,542.3667)"><path
@@ -476,6 +501,7 @@
      x="0"
      y="0"
      id="tspan230">0</tspan></text>
+
 
 <g
    id="g232"
@@ -491,6 +517,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan238">0.1</tspan></text>
+
 
 <g
    id="g240"
@@ -516,6 +543,7 @@
      sodipodi:role="line"
      id="tspan258">AS1 depth-averaged current velocity</tspan></text>
 
+
 <text
    transform="matrix(0,1,1,0,51.749,529.2842)"
    id="text260"><tspan
@@ -524,6 +552,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan262">[m/s]</tspan></text>
+
 
 <g
    id="g264"><g
@@ -553,6 +582,7 @@
      sodipodi:role="line"
      id="tspan284">47</tspan></text>
 
+
 <g
    id="g286"
    transform="translate(138.8335,451.2837)"><path
@@ -567,6 +597,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan292">48</tspan></text>
+
 
 <g
    id="g294"
@@ -583,6 +614,7 @@
      sodipodi:role="line"
      id="tspan300">49</tspan></text>
 
+
 <g
    id="g302"
    transform="translate(257.3335,451.2837)"><path
@@ -597,6 +629,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan308">50</tspan></text>
+
 
 <g
    id="g310"
@@ -613,6 +646,7 @@
      sodipodi:role="line"
      id="tspan316">51</tspan></text>
 
+
 <g
    id="g318"
    transform="translate(375.917,451.2837)"><path
@@ -627,6 +661,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan324">52</tspan></text>
+
 
 <g
    id="g326"
@@ -643,6 +678,7 @@
      sodipodi:role="line"
      id="tspan332">53</tspan></text>
 
+
 <g
    id="g334"
    transform="translate(494.417,451.2837)"><path
@@ -657,6 +693,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan340">54</tspan></text>
+
 
 <g
    id="g342"
@@ -673,6 +710,7 @@
      sodipodi:role="line"
      id="tspan348">55</tspan></text>
 
+
 <g
    id="g350"
    transform="translate(553.75,375.1172)"><path
@@ -688,6 +726,7 @@
      sodipodi:role="line"
      id="tspan356">-0.1</tspan></text>
 
+
 <g
    id="g358"
    transform="translate(553.75,405.6167)"><path
@@ -701,6 +740,7 @@
      x="0"
      y="0"
      id="tspan364">0</tspan></text>
+
 
 <g
    id="g366"
@@ -716,6 +756,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan372">0.1</tspan></text>
+
 
 <g
    id="g374"
@@ -741,6 +782,7 @@
      sodipodi:role="line"
      id="tspan392">AS2 depth-averaged current velocity</tspan></text>
 
+
 <text
    transform="matrix(0,1,1,0,51.749,392.5371)"
    id="text394"><tspan
@@ -749,6 +791,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan396">[m/s]</tspan></text>
+
 
 <g
    id="g398"><g
@@ -778,6 +821,7 @@
      sodipodi:role="line"
      id="tspan418">47</tspan></text>
 
+
 <g
    id="g420"
    transform="translate(138.8335,314.5332)"><path
@@ -792,6 +836,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan426">48</tspan></text>
+
 
 <g
    id="g428"
@@ -808,6 +853,7 @@
      sodipodi:role="line"
      id="tspan434">49</tspan></text>
 
+
 <g
    id="g436"
    transform="translate(257.3335,314.5332)"><path
@@ -822,6 +868,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan442">50</tspan></text>
+
 
 <g
    id="g444"
@@ -838,6 +885,7 @@
      sodipodi:role="line"
      id="tspan450">51</tspan></text>
 
+
 <g
    id="g452"
    transform="translate(375.917,314.5332)"><path
@@ -852,6 +900,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan458">52</tspan></text>
+
 
 <g
    id="g460"
@@ -868,6 +917,7 @@
      sodipodi:role="line"
      id="tspan466">53</tspan></text>
 
+
 <g
    id="g468"
    transform="translate(494.417,314.5332)"><path
@@ -882,6 +932,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan474">54</tspan></text>
+
 
 <g
    id="g476"
@@ -898,6 +949,7 @@
      sodipodi:role="line"
      id="tspan482">55</tspan></text>
 
+
 <g
    id="g484"
    transform="translate(553.75,238.2832)"><path
@@ -913,6 +965,7 @@
      sodipodi:role="line"
      id="tspan490">-0.1</tspan></text>
 
+
 <g
    id="g492"
    transform="translate(553.75,268.7832)"><path
@@ -926,6 +979,7 @@
      x="0"
      y="0"
      id="tspan498">0</tspan></text>
+
 
 <g
    id="g500"
@@ -941,6 +995,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan506">0.1</tspan></text>
+
 
 <g
    id="g508"
@@ -966,6 +1021,7 @@
      sodipodi:role="line"
      id="tspan526">AS3 depth-averaged current velocity</tspan></text>
 
+
 <text
    transform="matrix(0,1,1,0,51.749,255.7061)"
    id="text528"><tspan
@@ -974,6 +1030,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan530">[m/s]</tspan></text>
+
 
 <g
    id="g532"><g
@@ -1003,6 +1060,7 @@
      sodipodi:role="line"
      id="tspan552">47</tspan></text>
 
+
 <g
    id="g554"
    transform="translate(138.8335,177.7832)"><path
@@ -1017,6 +1075,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan560">48</tspan></text>
+
 
 <g
    id="g562"
@@ -1033,6 +1092,7 @@
      sodipodi:role="line"
      id="tspan568">49</tspan></text>
 
+
 <g
    id="g570"
    transform="translate(257.3335,177.7832)"><path
@@ -1047,6 +1107,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan576">50</tspan></text>
+
 
 <g
    id="g578"
@@ -1063,6 +1124,7 @@
      sodipodi:role="line"
      id="tspan584">51</tspan></text>
 
+
 <g
    id="g586"
    transform="translate(375.917,177.7832)"><path
@@ -1077,6 +1139,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan592">52</tspan></text>
+
 
 <g
    id="g594"
@@ -1093,6 +1156,7 @@
      sodipodi:role="line"
      id="tspan600">53</tspan></text>
 
+
 <g
    id="g602"
    transform="translate(494.417,177.7832)"><path
@@ -1107,6 +1171,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan608">54</tspan></text>
+
 
 <g
    id="g610"
@@ -1123,6 +1188,7 @@
      sodipodi:role="line"
      id="tspan616">55</tspan></text>
 
+
 <g
    id="g618"
    transform="translate(553.75,86.2832)"><path
@@ -1136,6 +1202,7 @@
      x="0"
      y="0"
      id="tspan624">0</tspan></text>
+
 
 <g
    id="g626"
@@ -1152,6 +1219,7 @@
      sodipodi:role="line"
      id="tspan632">0.1</tspan></text>
 
+
 <g
    id="g634"
    transform="translate(553.75,147.2832)"><path
@@ -1167,6 +1235,7 @@
      sodipodi:role="line"
      id="tspan640">0.2</tspan></text>
 
+
 <g
    id="g642"
    transform="translate(553.75,177.7832)"><path
@@ -1181,6 +1250,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan648">0.3</tspan></text>
+
 
 <g
    id="g650"
@@ -1218,6 +1288,7 @@
      sodipodi:role="line"
      id="tspan676">Depth-averaged current speed</tspan></text>
 
+
 <text
    transform="matrix(0,1,1,0,51.749,118.959)"
    id="text678"><tspan
@@ -1227,6 +1298,7 @@
      sodipodi:role="line"
      id="tspan680">[m/s]</tspan></text>
 
+
 <text
    transform="matrix(1,0,0,-1,117.9049,161.0121)"
    id="text682"><tspan
@@ -1235,6 +1307,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan684">AS1</tspan></text>
+
 
 <g
    id="g686"
@@ -1251,6 +1324,7 @@
      sodipodi:role="line"
      id="tspan692">AS2</tspan></text>
 
+
 <g
    id="g694"
    transform="translate(151.25,165.3428)"><path
@@ -1266,6 +1340,7 @@
      sodipodi:role="line"
      id="tspan700">AS3</tspan></text>
 
+
 <g
    id="g702"
    transform="translate(218.0239,165.4287)"><path
@@ -1280,6 +1355,7 @@
      y="0"
      sodipodi:role="line"
      id="tspan708">2014 Year Day</tspan></text>
+
 
 <text
    transform="matrix(1,0,0,-1,40,731.2764)"
@@ -1310,80 +1386,84 @@
      sodipodi:role="line"
      id="tspan720">e)</tspan></text>
 
+
 </g><g
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Endmembers"><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 321.31254,84.742786 0.77771,112.768294"
-       id="path3759"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 321.70139,257.00608 0.77771,112.76829"
-       id="path3759-7"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 469.34943,84.353931 0.77771,112.768299"
-       id="path3759-4"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 468.57172,253.89523 0.77771,112.76829"
-       id="path3759-3"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 320.92368,427.32509 0.77771,112.76829"
-       id="path3759-6"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 469.34942,427.3251 0.77771,112.76829"
-       id="path3759-43"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 321.70139,598.42181 322.4791,711.1901"
-       id="path3759-5"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 469.34943,596.86639 0.77771,112.76829"
-       id="path3759-2"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 320.92368,767.96312 0.77771,112.76829"
-       id="path3759-28"
-       inkscape:connector-curvature="0" /><path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 468.57171,767.96312 0.77771,112.76829"
-       id="path3759-68"
-       inkscape:connector-curvature="0" /><text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
-       x="190.1402"
-       y="97.064911"
-       id="text3835"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3837"
-         x="190.1402"
-         y="97.064911">WIND</tspan></text>
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 247.31254,84.742786 0.77771,112.768294"
+   id="path3759"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 247.70139,257.00608 0.77771,112.76829"
+   id="path3759-7"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 469.34943,84.353931 0.77771,112.768299"
+   id="path3759-4"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 468.57172,253.89523 0.77771,112.76829"
+   id="path3759-3"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 246.92368,427.32509 0.77771,112.76829"
+   id="path3759-6"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 469.34942,427.3251 0.77771,112.76829"
+   id="path3759-43"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="M 247.70139,598.42181 248.4791,711.1901"
+   id="path3759-5"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 469.34943,596.86639 0.77771,112.76829"
+   id="path3759-2"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 246.92368,767.96312 0.77771,112.76829"
+   id="path3759-28"
+   inkscape:connector-curvature="0" /><path
+   style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+   d="m 468.57171,767.96312 0.77771,112.76829"
+   id="path3759-68"
+   inkscape:connector-curvature="0" /><text
+   xml:space="preserve"
+   style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
+   x="154.1402"
+   y="97.064911"
+   id="text3835"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     id="tspan3837"
+     x="154.1402"
+     y="97.064911">WIND</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
-       x="384.07892"
-       y="97.709938"
-       id="text3839"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3841"
-         x="384.07892"
-         y="97.709938">TIDE</tspan></text>
+   xml:space="preserve"
+   style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
+   x="342.07892"
+   y="97.709938"
+   id="text3839"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     id="tspan3841"
+     x="342.07892"
+     y="97.709938">TIDE</tspan></text>
+
 <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
-       x="561.17523"
-       y="96.993248"
-       id="text3843"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3845"
-         x="561.17523"
-         y="96.993248">WAVE</tspan></text>
+   xml:space="preserve"
+   style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Sans"
+   x="561.17523"
+   y="96.993248"
+   id="text3843"
+   sodipodi:linespacing="125%"><tspan
+     sodipodi:role="line"
+     id="tspan3845"
+     x="561.17523"
+     y="96.993248">WAVE</tspan></text>
+
 </g></svg>
