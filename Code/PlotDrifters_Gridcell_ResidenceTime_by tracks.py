@@ -30,7 +30,7 @@ if git==True: ## Git repository
     datadir=maindir+'Data/'
     trackdir = maindir+'Data/AllTracks/'
     GISdir = maindir+'Data/DriftersGIS/'
-    figdir = maindir+'Figures/fromAlex/'
+    figdir = maindir+'Figures/Figure creation/fromAlex/Residence Time gridded/'
     dirs={'main':maindir,'data':datadir,'track':trackdir,'GIS':GISdir,'fig':figdir}
 elif git!=True: ## Local folders
     datadir = 'C:/Users/Alex/Desktop/'
@@ -54,9 +54,12 @@ elif create_new==False:
 
 
 ## Select deployments, cut to deployment time
-endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+## Prior to 12/18/15
+#endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+## Revised after 12/18/15
+endmembers={"wind":range(9,15),"tide":range(15,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
 
-by_dep='wind'## Set to None if you want to show all the data
+by_dep='wave'## Set to None if you want to show all the data
 
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
@@ -82,7 +85,7 @@ if by_dep!=None:
     AllPoints.to_csv(datadir+'AllPoints-'+by_dep+'.csv')
 
 
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=True,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=True,labelBinGrid=False,showLaunchZones=False)  
 
 
 #### Analyze by Gridcell
@@ -146,26 +149,31 @@ for shape in grid.shapes():
                 Dv = vdir - 180
             else:
                 Dv = vdir
+        ## From U,V
         GridMean_speed = u_v
+        ## Mean of speeds, calculated from drifter locations (somewhere other than in this code?)
+        GridMean_speed = M.mean()        
+        
         GridMean_bearing=Dv
         GridNumObs = len(gridpoints)
         
         GridMeanResTime = 100/GridMean_speed/60 ## Time = Distance(m)/Time(m/s) to min /(sec/min)
-        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing+', Residence Time= '+'%.2f'%GridResTime+' min'
+        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.3f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing+', Residence Time= '+'%.1f'%GridMeanResTime+' min'
         grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees        
         GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,GridNumObs,GridResTime,GridMeanResTime,GridMean_speed,GridMean_bearing]]),index=[gridcount],columns=['lon','lat','NumObs','ResTime','MeanResTime','speed m/s','bearing'])
         AllGridValues=AllGridValues.append(GridValues)
         
         ## Plot shape
-        cMap = mpl.cm.rainbow
-        cNorm =  mpl.colors.Normalize(vmin=0,vmax=30) ## = res time?
+        cMap = mpl.cm.autumn_r
+        cMap = mpl.cm.YlOrRd
+        cNorm =  mpl.colors.Normalize(vmin=5,vmax=45) ## = res time?
         m = mpl.cm.ScalarMappable(norm=cNorm,cmap=cMap)
-        ResTime_color = m.to_rgba(GridResTime)
+        ResTime_color = m.to_rgba(GridMeanResTime)
         
         verts = np.array(shape.points).T
         poly_lons,poly_lats=Map(verts[0],verts[1])
         xy=zip(poly_lons,poly_lats)
-        poly = Polygon(xy,facecolor=ResTime_color,alpha=0.5)
+        poly = Polygon(xy,facecolor=ResTime_color,alpha=0.75)
         plt.gca().add_patch(poly)
         
     gridcount-=1 # count down from total length of grid by 1  
@@ -173,6 +181,7 @@ for shape in grid.shapes():
 
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+
 divider = make_axes_locatable(Map.ax)
 cax = divider.append_axes("right", size="5%", pad=0.05)
 cbar = mpl.colorbar.ColorbarBase(cax,cmap=cMap,norm=cNorm,orientation='vertical')
@@ -197,7 +206,7 @@ plt.show()
 
 
 
-#plt.savefig(figdir+'drifters Res Time-'+by_dep+'.svg',transparent=True)
-
+plt.savefig(figdir+'drifters Res Time-'+by_dep+'.svg',transparent=True)
+plt.savefig(figdir+'drifters Res Time-'+by_dep+'.png',transparent=True)
 
 

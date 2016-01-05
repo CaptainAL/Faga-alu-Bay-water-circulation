@@ -30,7 +30,7 @@ if git==True: ## Git repository
     datadir=maindir+'Data/'
     trackdir = maindir+'Data/AllTracks/'
     GISdir = maindir+'Data/DriftersGIS/'
-    figdir = maindir+'Figures/fromAlex/'
+    figdir = maindir+'Figures/Figure creation/fromAlex/'
     dirs={'main':maindir,'data':datadir,'track':trackdir,'GIS':GISdir,'fig':figdir}
 elif git!=True: ## Local folders
     datadir = 'C:/Users/Alex/Desktop/'
@@ -54,8 +54,12 @@ elif create_new==False:
 
 
 ## Select deployments, cut to deployment time
-endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
-by_dep='wave'## Set to None if you want to show all the data
+endmembers={"wind":range(9,15),"tide":range(15,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+
+
+by_dep='wind'## Set to None if you want to show all the data
+
+
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
@@ -100,7 +104,7 @@ for shape in grid.shapes():
     
     ## get points from the Gridcell
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
-    print 'Analyzing Gridcell '+str(gridcount)+', '+str(len(gridpoints))+' points'
+    #print 'Analyzing Gridcell '+str(gridcount)+', '+str(len(gridpoints))+' points'
     if len(gridpoints) >= 4:
         rotation = 0 #the angle to rotate the axes counter-clockwise to bring the positive alongshore component into the strike of the coast and
         #positive onshore component 90 degrees clockwise from the positive alongshore orientation if cross-shore and alongshore components are 
@@ -139,31 +143,33 @@ for shape in grid.shapes():
       
         # ellipses ...
         #e = Map.ax.add_artist(Ellipse(xy=XY,width=U,height=V,label=str(gridcount),color='r',fill=False,lw=1))  
-        scale_factor = 500
+        ellipse_scale_factor = 500
         NumObs = len(gridpoints)
-        MeanSpeed = gridpoints['speed m/s'].dropna().values.mean() 
-        print 'MeanSpeed= '+str(MeanSpeed)
         
-        cMap,cNorm = mpl.cm.rainbow, mpl.colors.Normalize(vmin=0,vmax=1) ## =Num of observations
+        MeanSpeed = gridpoints['speed m/s'].dropna().values.mean() 
+        #print 'MeanSpeed= '+'%.2f'%MeanSpeed+' m/s'
+        
+        cMap,cNorm = mpl.cm.rainbow, mpl.colors.Normalize(vmin=0,vmax=200) ## =Num of observations
         m = mpl.cm.ScalarMappable(norm=cNorm,cmap=cMap)
         ellipse_color = m.to_rgba(NumObs)
-        ellipse_color = m.to_rgba(MeanSpeed)
+        #ellipse_color = m.to_rgba(MeanSpeed)
         
         #Major axis
-        Map.plot([grid_lon+Major_x1*scale_factor,grid_lon+Major_x2*scale_factor],[grid_lat+Major_y1*scale_factor,grid_lat+Major_y2*scale_factor],c=ellipse_color,lw=1)
+        Map.plot([grid_lon+Major_x1*ellipse_scale_factor,grid_lon+Major_x2*ellipse_scale_factor],[grid_lat+Major_y1*ellipse_scale_factor,grid_lat+Major_y2*ellipse_scale_factor],c=ellipse_color,lw=1)
         #Minor axis        
-        Map.plot([grid_lon+Minor_x1*scale_factor,grid_lon+Minor_x2*scale_factor],[grid_lat+Minor_y1*scale_factor,grid_lat+Minor_y2*scale_factor],c=ellipse_color,lw=1)
+        Map.plot([grid_lon+Minor_x1*ellipse_scale_factor,grid_lon+Minor_x2*ellipse_scale_factor],[grid_lat+Minor_y1*ellipse_scale_factor,grid_lat+Minor_y2*ellipse_scale_factor],c=ellipse_color,lw=1)
         #Ellipse        
-        Map.plot(grid_lon+ellipseX*scale_factor,grid_lat+ellipseY*scale_factor,c=ellipse_color,lw=1)
+        Map.plot(grid_lon+ellipseX*ellipse_scale_factor,grid_lat+ellipseY*ellipse_scale_factor,c=ellipse_color,lw=1)
         
         ##Raw point data (easting/northing)
-        scale_factor = 100
+        #scale_factor = 100
         #Map.plot(grid_lon+u*scale_factor,grid_lat+v*scale_factor,'og')
         #Map.plot(grid_lon,grid_lat,'or')
         
-        GridMeans = pd.DataFrame(np.array([[grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,NumObs,MeanSpeed]]),index=[gridcount],columns=['lon','lat','u','v','NumObs','MeanSpeed'])
+        GridMeans = pd.DataFrame(np.array([[grid_lon,grid_lat,u_avg*ellipse_scale_factor,v_avg*ellipse_scale_factor,NumObs,MeanSpeed]]),index=[gridcount],columns=['lon','lat','u','v','NumObs','MeanSpeed'])
+        
         AllMeans = AllMeans.append(GridMeans)
-#        qHndl = Map.quiver(grid_lon,grid_lat,u_avg*scale_factor,v_avg*scale_factor,color=ellipse_color)
+#        qHndl = Map.quiver(grid_lon,grid_lat,u_avg*ellipse_scale_factor,v_avg*ellipse_scale_factor,color=ellipse_color)
         
         
         #Mean speed/direction
@@ -178,7 +184,7 @@ for shape in grid.shapes():
             vn = vn + M[i] * math.cos(D[i]) # calculate sum north speed components
         ve = - ve / len(M) # determine average east speed component
         vn = - vn / len(M) # determine average north speed component
-        u_v = math.sqrt(ve * ve + vn * vn) # calculate wind speed vector magnitude
+        u_v = ((ve * ve) + (vn * vn))**0.5 # calculate wind speed vector magnitude
         #Calculate wind speed vector direction
         vdir = scipy.arctan2(ve, vn)
         vdir = vdir * 180.0 / math.pi # Convert radians to degrees
@@ -192,16 +198,32 @@ for shape in grid.shapes():
         GridMean_speed = u_v
         GridMean_bearing=Dv
         GridNumObs = len(gridpoints)
-        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing
-        grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees        
+        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing+'  mean of drifter speeds = '+'%.2f'%MeanSpeed+' m/s'
+        
+        grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees   
+        
         GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,len(gridpoints),GridMean_speed,GridMean_bearing]]),index=[gridcount],columns=['lon','lat','NumObs','speed m/s','bearing'])
         AllGridValues=AllGridValues.append(GridValues)
 
     gridcount-=1 # count down from total length of grid by 1  
 
 def MeanEllipse_Arrows(Map,df):
-    Q =Map.quiver(df['lon'].values,df['lat'].values,df['u'].values,df['v'].values,df['MeanSpeed'].values,cmap=plt.cm.rainbow,norm=cNorm) 
+    # Color by speed
+    #Q = Map.quiver(df['lon'].values, df['lat'].values, df['u'].values, df['v'].values, df['speed m/s'].values, cmap=plt.cm.rainbow, norm=cNorm)
+    # Color by Number of Observations
+    Q = Map.quiver(df['lon'].values, df['lat'].values, df['u'].values, df['v'].values, df['NumObs'].values, cmap=plt.cm.rainbow, norm=cNorm,
+                   angles='xy',
+                   scale=1.0,
+                   scale_units='xy',
+                   width=0.005, headwidth=5, headlength=5, headaxislength=4.5, 
+                   minshaft=0.3, minlength=2
+                   )
+    ## Arrow legend
+
     return Q
+#key_u, key_v = 
+#AllMeans=AllMeans.append(pd.DataFrame({'MeanSpeed':0.1,'lat':AllMeans['lat'].min()-10,'lon':AllMeans['lon'].median()}
+
 qHndl =  MeanEllipse_Arrows(Map,AllMeans)
 
 
@@ -212,7 +234,7 @@ cbar = mpl.colorbar.ColorbarBase(cax,cmap=plt.cm.rainbow,norm=cNorm,orientation=
 cbar.set_label('# observations')
 
 if by_dep=='wave':
-    qk = plt.quiverkey(qHndl, 0.6, -0.02,0.1*scale_factor, '0.1 m/s', labelpos='W')
+    qk = plt.quiverkey(qHndl, 0.6, -0.02, 0.1*ellipse_scale_factor, '0.1 m/s', labelpos='W')
 
 
 #### Plot arrows by speed
@@ -225,13 +247,16 @@ from DrifterDataAnalysisTools import plot_arrows_by_speed
 from DrifterDataAnalysisTools import plot_grid_ellipses_arrows
 #plot_grid_ellipses_arrows(Map,AllGridValues)
 
-#plt.suptitle('End member condition: '+by_dep)
+plt.suptitle('End member condition: '+by_dep)
 
 plt.show()
 
 
 
-#plt.savefig(figdir+'Paxes gridded/'+'drifters P axes with arrows-'+by_dep+'.svg',transparent=True)
+plt.savefig(figdir+'Paxes gridded/'+'drifters P axes with arrows-'+by_dep+'.svg',transparent=True)
+plt.savefig(figdir+'Paxes gridded/'+'drifters P axes with arrows-'+by_dep+'.png',transparent=True)
 
 
+print 'Mean speed of drifters during '+by_dep+' = '+"%.3f"%AllPoints['speed m/s'].mean()+'+- '+"%.3f"%AllPoints['speed m/s'].std()+' STD m/s'
+print 'Drifters n: '+"%.0f"%len(AllPoints.values)
 

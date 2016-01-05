@@ -1,0 +1,49 @@
+TIDE
+
+AS1
+U avg = -0.1166 m/s; V avg = 0.0449 m/s
+Speed avg = 0.1249 m/s
+  
+AS2
+U avg = -0.0359 m/s; V avg = -0.0074 m/s
+Speed avg = 0.0366 m/s
+  
+AS3
+U avg = 0.0006 m/s; V avg = 0.0067 m/s
+Speed avg = 0.0067 m/s
+
+Overall speed avg +/- 1 std = 0.056 +/- 0.061 m/s
+  
+  
+WIND
+
+AS1
+U avg = -0.1424 m/s; V avg = 0.0421 m/s
+Speed avg = 0.1485 m/s
+  
+AS2
+U avg = -0.0627 m/s; V avg = -0.0262 m/s
+Speed avg = 0.0680 m/s
+  
+AS3
+U avg = -0.0009 m/s; V avg = -0.0039 m/s
+Speed avg = 0.0040 m/s
+  
+Overall speed avg +/- 1 std = 0.074 +/- 0.073 m/s
+
+
+WAVES
+
+AS1
+U avg = -0.2104 m/s; V avg = 0.0422 m/s
+Speed avg = 0.2146 m/s
+
+AS2
+U avg = -0.1056 m/s; V avg = -0.0304 m/s
+Speed avg = 0.1099 m/s
+  
+AS3
+U avg = 0.0118 m/s; V avg = 0.0014 m/s
+Speed avg = 0.0118 m/s
+
+Overall speed avg +/- 1 std = 0.112 +/- 0.101 m/s

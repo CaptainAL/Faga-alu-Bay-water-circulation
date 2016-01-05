@@ -54,8 +54,13 @@ elif create_new==False:
 
 
 ## Select deployments, cut to deployment time
-endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+## Prior to 12/18/15
+#endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+## Revised after 12/18/15
+endmembers={"wind":range(9,15),"tide":range(15,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+
 by_dep='wind'## Set to None if you want to show all the data
+
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')

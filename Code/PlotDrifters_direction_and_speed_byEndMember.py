@@ -41,7 +41,7 @@ if git==True: ## Git repository
     datadir=maindir+'Data/'
     trackdir = maindir+'Data/AllTracks/'
     GISdir = maindir+'Data/DriftersGIS/'
-    figdir = maindir+'Figures/Figure creation/fromAlex/'
+    figdir = maindir+'Figures/Figure creation/fromAlex/Progressive Vectors/'
     dirs={'main':maindir,'data':datadir,'track':trackdir,'GIS':GISdir,'fig':figdir}
 elif git!=True: ## Local folders
     datadir = 'C:/Users/Alex/Desktop/'
@@ -58,8 +58,15 @@ shapef = shapefile.Reader(GISdir+'grid100m_geo.shp')
 AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') ##in PlotDrifters_byLaunchZone.py
 
 ## Select deployments, cut to deployment time
-endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+
+## Select deployments, cut to deployment time
+## Prior to 12/18/15
+#endmembers={"wind":range(9,13),"tide":range(13,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+## Revised after 12/18/15
+endmembers={"wind":range(9,15),"tide":range(15,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
+
 by_dep='wave'## Set to None if you want to show all the data
+
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
     XL = pd.ExcelFile(datadir+'Drifter deployment checklist.xlsx')
@@ -84,17 +91,21 @@ if by_dep!=None:
     
 #### Plot arrows by speed
 ## Plot dirction arrows (lon and lat of where the point is, U and V of arrow vector (use sin and cos of the dirction in radians), color by speed)    
-Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=False,showBinGrid=True,labelBinGrid=True,showLaunchZones=False)  
+Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=False,showWatershed=False,showBinGrid=False,labelBinGrid=False,showLaunchZones=False)  
 
-from DrifterDataAnalysisTools import plot_arrows_by_speed
-plot_arrows_by_speed(Map,AllPoints)
+
+#from DrifterDataAnalysisTools import plot_arrows_by_speed
+#plot_arrows_by_speed(Map,AllPoints)
 from DrifterDataAnalysisTools import plot_points_by_launchzone
 AllPoints = AllPoints[AllPoints['LaunchZone']>0]
-#plot_points_by_launchzone(Map,AllPoints,colorbar=False)
+plot_points_by_launchzone(Map,AllPoints,colorbar=False)
 
-#plt.suptitle('End member condition: '+by_dep)
 
-#plt.savefig(figdir+'Velocity gridded/'+'drifters velocity-'+by_dep+'.svg',transparent=True)
+
+plt.suptitle('End member condition: '+by_dep)
+
+plt.savefig(figdir+'Prog vectors drifters-'+by_dep+'.svg',transparent=True)
+plt.savefig(figdir+'Prog vectors drifters-'+by_dep+'.png',transparent=True)
 
 
 

@@ -101,11 +101,17 @@ for deployment in DepInfo.iterrows():
 #### Plot selections
 #Map=Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=True,showWatershed=True,showBinGrid=True,showLaunchZones=False)  
 #sc=plot_arrows_by_speed(Map,AllPoints)
-       
-tide=[1,2,3,13,14,15,16,17,18,19,20]    
-wind=[4,5,6,7,8,9,10,11,12]
-wave=range(21,31)
+     
+## Prior to 12/18/15
+#tide=[1,2,3,13,14,15,16,17,18,19,20]    
+#wind=[4,5,6,7,8,9,10,11,12]
+#wave=range(21,31)
 alldeps=range(1,31)
+
+## Revised after 12/18/15
+tide = range(15,21)
+wind = range(9,15)
+wave = range(21,31)
 
 end_member_dict = {'tide':tide,'wind':wind,'wave':wave}
 
