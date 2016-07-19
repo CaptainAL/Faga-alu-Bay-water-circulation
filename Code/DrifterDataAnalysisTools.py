@@ -36,7 +36,7 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     gMap = Basemap(projection='merc', resolution='f',llcrnrlon=ll[1], llcrnrlat=ll[0],urcrnrlon=ur[1], urcrnrlat=ur[0],ax=ax)
     #### Show background image from DriftersBackground.mxd
     if showBackgroundImage==True:
-        background = np.flipud(plt.imread('C:/Users/Alex/Documents/GitHub/Faga-alu-Bay-water-circulation/Figures/Figure creation/fromAlex/DrifterBackgrounds/DrifterBackground_matchCurts_NewImagery.png'))
+        background = np.flipud(plt.imread('C:/Users/atm19/Documents/GitHub/Faga-alu-Bay-water-circulation/Figures/Figure creation/fromAlex/DrifterBackgrounds/DrifterBackground_matchCurts_NewImagery.png'))
         gMap.imshow(background,origin='lower')#,extent=[ll[1],ll[0],ur[1],ur[0]])
     #### Show Lat/Lon Grid        
     if showLatLonGrid==True:       
@@ -46,18 +46,24 @@ def Drifter_Map(dirs,MapExtent='Local',showLatLonGrid=False,showBackgroundImage=
     if showWatershed==True:
         gMap.readshapefile(GISdir+'fagaalugeo','fagaalugeo') ## Display coastline of watershed
     if showBinGrid==True:
-        gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo',color='w') ## Display 100m grid cells for statistical analysis
+        #gMap.readshapefile(GISdir+'grid100m_geo','grid100m_geo',color='w') ## Display 100m grid cells for statistical analysis
+        gMap.readshapefile(GISdir+'zones/delineated/allzones','allzones',color='w') 
     if labelBinGrid==True:
-        gridshape=shapefile.Reader(GISdir+'grid100m_geo.shp')
+        gridshape=shapefile.Reader(GISdir+'zones/delineated/allzones.shp')
         labelcount=len(gridshape.shapes())
         for shape in gridshape.shapes():
-            x,y= gMap(shape.points[0][0],shape.points[0][1])
-            plt.text(x,y,labelcount,color='w',fontsize=8)
+            lat_avg = np.array(shape.points)[:,1].mean()
+            lon_avg = np.array(shape.points)[:,0].mean()
+            #x,y= gMap(shape.points[0][0],shape.points[0][1])
+            x,y= gMap(lon_avg,lat_avg)
+            geomorph_zone_nums = {1:'North reef flat',2:'Open ocean',3:'South reef flat',4:'Channel',5:'Backreef pools'}
+            plt.text(x,y,geomorph_zone_nums[labelcount],color='w',fontsize=8,ha='center')
             #print str(labelcount)+' '+str(shape.points[0][0])+' '+str(shape.points[0][1])
             labelcount-=1
     if showLaunchZones==True:
         gMap.readshapefile(GISdir+'Launchpads','Launchpads') ## Display launch zones
     return gMap
+    
 
 def my_parser(x,y):#x is the date, y is the time
             y = str(int(y))
@@ -88,12 +94,17 @@ def point_in_polygon(x,y,poly):
 def point_in_gridcell(gridshape,point):
     polycount = len(gridshape.shapes()) # of polygons in shapefile
     for poly in gridshape.shapes(): # loop over polygons in shapefile
-        if point_in_polygon(point.longitude,point.latitude,poly.points)==True: ## Test if point is in polygon
-            #print "point is from polygon "+str(polycount)
+         ## Test if point is in polygon
+        ## if point is inside poygon
+        if point_in_polygon(point.longitude,point.latitude,poly.points)==True:
+            print "point is from polygon "+str(polycount)
             Gridcell_of_point = polycount ## Set gridcell equal to the polygon#
         else:
             polycount-=1
             pass
+        if polycount==0:
+            Gridcell_of_point = 999
+
     return Gridcell_of_point
     
 def point_in_launchzone(launchzoneshape,count,point):
@@ -106,7 +117,7 @@ def point_in_launchzone(launchzoneshape,count,point):
             polycount-=1
             pass	
         if polycount==0:
-#                        print "Point not in a poygon"
+#                        print "Point not in a polygon"
             LZ=0
     return LZ
 
@@ -217,7 +228,7 @@ def speed_and_bearing(tracklist,gridshape=None,launchzoneshape=None):
 def speed_and_bearing_to_file(dirs,tracklist,gridshape=None,launchzoneshape=None):
     AllPoints = speed_and_bearing(tracklist,gridshape,launchzoneshape)
     datadir=dirs['data']
-    AllPoints.to_csv(datadir+'AllPoints.csv')
+    AllPoints.to_csv(datadir+'AllPoints-geomorph.csv')
     return AllPoints
 #### Make AllPoints csv
 #from DrifterDataAnalysisTools import speed_and_bearing_to_file

@@ -26,7 +26,7 @@ pd.set_option('display.large_repr', 'info')
 ## Set Directories
 git=True
 if git==True: ## Git repository
-    maindir = 'C:/Users/Alex/Documents/GitHub/Faga-alu-Bay-water-circulation/' 
+    maindir = 'C:/Users/atm19/Documents/GitHub/Faga-alu-Bay-water-circulation/' 
     datadir=maindir+'Data/'
     trackdir = maindir+'Data/AllTracks/'
     GISdir = maindir+'Data/DriftersGIS/'
@@ -42,7 +42,9 @@ gpx = gpxpy.parse(open(trackdir+'All_Tracks_UTM2S.gpx','r')) ## All tracks
 tracklist=gpx.tracks[0:] 
 ##
 #### Open shapefiles for analysis
-grid = shapefile.Reader(GISdir+'grid100m_geo.shp')
+#grid = shapefile.Reader(GISdir+'grid100m_geo.shp')
+geomorph_zones = shapefile.Reader(GISdir+'zones/delineated/allzones.shp')
+grid = shapefile.Reader(GISdir+'zones/delineated/allzones.shp')
 launch= shapefile.Reader(GISdir+'Launchpads.shp')
 #### Build dataset
 create_new = False
@@ -50,7 +52,7 @@ if create_new==True:
     #AllPoints = speed_and_bearing(tracklist,gridshape=grid,launchzoneshape=launch)
     AllPoints = speed_and_bearing_to_file(dirs,tracklist,gridshape=grid,launchzoneshape=launch)
 elif create_new==False:
-    AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints.csv') 
+    AllPoints = pd.DataFrame.from_csv(datadir+'AllPoints-geomorph.csv') 
 
 
 ## Select deployments, cut to deployment time
@@ -59,7 +61,8 @@ elif create_new==False:
 ## Revised after 12/18/15
 endmembers={"wind":range(9,15),"tide":range(15,21),"wave":range(21,31),"all":range(1,31)} ## range are non inclusive
 
-by_dep='wind'## Set to None if you want to show all the data
+by_dep='wave'## Set to None if you want to show all the data
+print 'Data for deployment: '+by_dep
 
 if by_dep!=None:
     ## Open Spreadsheet of deployment data
@@ -103,12 +106,13 @@ for shape in grid.shapes():
     grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees
     grid_lon, grid_lat = Map(grid_lon,grid_lat,inverse=False) ## in projected degrees
     
+    geomorph_zone_nums = {1:'North reef flat',2:'Open ocean',3:'South reef flat',4:'Channel',5:'Backreef pools'}
     ## get points from the Gridcell
     gridpoints = AllPoints[AllPoints['Gridcell']==gridcount].dropna()
-    print 'Analyzing Gridcell '+str(gridcount)+', '+str(len(gridpoints))+' points'
+    print 'Analyzing Gridcell '+str(geomorph_zone_nums[gridcount])+', '+str(len(gridpoints))+' points'
     if len(gridpoints) >= 4:
 
-        
+        Grid_min, Grid_max, Grid_std = gridpoints['speed m/s'].min(), gridpoints['speed m/s'].max(), gridpoints['speed m/s'].std()
         #Mean speed/direction
         M=gridpoints['speed m/s'].values    
         D=gridpoints['bearing'].values
@@ -136,7 +140,8 @@ for shape in grid.shapes():
         GridMean_bearing=Dv
         GridNumObs = len(gridpoints)
         GridResTime = 100/GridMean_speed/60 ## Time = Distance(m)/Time(m/s) to min /(sec/min)
-        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(gridcount)+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing+', Residence Time= '+'%.2f'%GridResTime+' min'
+        print 'Mean speed of '+str(GridNumObs)+' points in Gridcell '+str(geomorph_zone_nums[gridcount])+' = '+'%.2f'%GridMean_speed+' m/s, bearing '+'%.2f'%GridMean_bearing+', Residence Time= '+'%.2f'%GridResTime+' min'
+        print str(geomorph_zone_nums[gridcount])+' Mean: '+'%.2f'%GridMean_speed+' Min: '+'%.2f'%Grid_min+' Max: '+'%.2f'%Grid_max+' STD: '+'%.2f'%Grid_std
         grid_lon, grid_lat = np.mean(grid_lons),np.mean(grid_lats) ## in decimal degrees        
         GridValues = pd.DataFrame(np.array([[grid_lon,grid_lat,GridNumObs,GridResTime,GridMean_speed,GridMean_bearing]]),index=[gridcount],columns=['lon','lat','NumObs','ResTime','speed m/s','bearing'])
         AllGridValues=AllGridValues.append(GridValues)
@@ -182,7 +187,7 @@ plt.show()
 
 
 
-plt.savefig(figdir+'drifters Res Time-'+by_dep+'.svg',transparent=True)
+#plt.savefig(figdir+'drifters Res Time-'+by_dep+'.svg',transparent=True)
 
 
 
